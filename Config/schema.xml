@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<database defaultIdMethod="native" name="thelia"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="../../../core/vendor/thelia/propel/resources/xsd/database.xsd" >
+    <!--
+    See propel documentation on http://propelorm.org for all information about schema file
+    -->
+
+    <table name="schedule" namespace="Schedules\Model">
+        <column name="id" type="integer" primaryKey="true" autoIncrement="true" required="true" />
+        <column name="day" type="tinyint" />
+        <column name="begin" type="time" />
+        <column name="end" type="time" />
+        <column name="closed" type="boolean" />
+        <column name="period_begin" type="date" />
+        <column name="period_end" type="date" />
+        <behavior name="timestampable" />
+    </table>
+
+    <table name="product_schedule" namespace="Schedules\Model">
+        <column name="schedule_id" type="integer" primaryKey="true" required="true" />
+        <column name="product_id" type="integer" required="true" />
+        <column name="stock" type="integer" />
+        <foreign-key foreignTable="schedule" name="fk_schedule_id">
+            <reference local="schedule_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="product" name="fk_product_id">
+            <reference local="product_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <table name="content_schedule" namespace="Schedules\Model">
+        <column name="schedule_id" type="integer" primaryKey="true" required="true" />
+        <column name="content_id" type="integer" required="true" />
+        <foreign-key foreignTable="schedule" name="fk_schedule_id">
+            <reference local="schedule_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="content" name="fk_content_id">
+            <reference local="content_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <table name="store_schedule" namespace="Schedules\Model">
+        <column name="schedule_id" type="integer" primaryKey="true" required="true" />
+        <foreign-key foreignTable="schedule" name="fk_schedule_id">
+            <reference local="schedule_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <table name="cart_item_schedule" namespace="Schedules\Model">
+        <column name="schedule_id" type="integer" primaryKey="true" required="true" />
+        <column name="cart_item_id" type="integer" required="true" />
+        <foreign-key foreignTable="schedule" name="fk_schedule_id">
+            <reference local="schedule_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="cart_item" name="fk_cart_item_id">
+            <reference local="cart_item_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <table name="order_product_schedule" namespace="Schedules\Model">
+        <column name="schedule_id" type="integer" primaryKey="true" required="true" />
+        <column name="order_product_id" type="integer" required="true" />
+        <foreign-key foreignTable="schedule" name="fk_schedule_id">
+            <reference local="schedule_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="order_product" name="fk_order_product_id">
+            <reference local="order_product_id" foreign="id" />
+        </foreign-key>
+    </table>
+
+    <external-schema filename="local/config/schema.xml" referenceOnly="true" />
+
+</database>

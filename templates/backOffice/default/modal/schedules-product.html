@@ -1,0 +1,81 @@
+{* CREATE MODAL *}
+{form name="schedules.product.create"}
+    {capture "schedules_create"}
+        {include file="forms/product/schedules-create.html" form_name="schedules.product.create" product_id=$product_id}
+    {/capture}
+
+    {include file="includes/generic-create-dialog.html"
+
+             dialog_id       = "schedules-create"
+             dialog_title    = {intl l="Create a schedules" d="schedules.bo.default"}
+             dialog_body     = {$smarty.capture.schedules_create nofilter}
+
+             dialog_ok_label     = {intl l="Create"}
+             dialog_cancel_label = {intl l="Cancel"}
+
+             form_action        = {url path="admin/module/schedules/product/create"}
+             form_enctype       = {form_enctype form=$form}
+    }
+{/form}
+
+{* UPDATE MODAL *}
+{form name="schedules.product.update"}
+    {capture "schedules_update"}
+        {form_field form=$form field="schedule_id"}
+        <input type="hidden" id="{$label_attr.for}" name="{$name}" value="" />
+        {/form_field}
+        {include file="forms/product/schedules-create.html" form_name="schedules.product.update" product_id=$product_id update=true}
+    {/capture}
+
+    {include file="includes/generic-create-dialog.html"
+
+             dialog_id       = "schedules-update"
+             dialog_title    = {intl l="Modify a schedules" d="schedules.bo.default"}
+             dialog_body     = {$smarty.capture.schedules_update nofilter}
+
+             dialog_ok_label     = {intl l="Save"}
+             dialog_cancel_label = {intl l="Cancel"}
+
+             form_action        = {url path="admin/module/schedules/product/update"}
+             form_enctype       = {form_enctype form=$form}
+    }
+{/form}
+
+{* CLONE MODAL *}
+{form name="schedules.product.clone"}
+    {capture "schedules_clone"}
+        {include file="forms/product/schedules-clone.html" form_name="schedules.product.clone"}
+    {/capture}
+
+    {include file="includes/generic-create-dialog.html"
+
+             dialog_id       = "schedules-clone"
+             dialog_title    = {intl l="Clone a schedules" d="schedules.bo.default"}
+             dialog_body     = {$smarty.capture.schedules_clone nofilter}
+
+             dialog_ok_label     = {intl l="Clone"}
+             dialog_cancel_label = {intl l="Cancel"}
+
+             form_action        = {url path="admin/module/schedules/product/clone"}
+             form_enctype       = {form_enctype form=$form}
+    }
+{/form}
+
+{* DELETE MODAL *}
+{capture "schedules_delete"}
+    {intl l="Do you really want to delete this schedules ?" d="schedules.bo.default"}
+    <input type="hidden" name="schedule_id" id="schedules_delete_schedule_id" value="" />
+    <input type="hidden" name="product_id" value="{$product_id}" />
+    <input type="hidden" name="success_url" value="{url path='/admin/products/update?product_id=%product_id&current_tab=schedules' product_id=$product_id}"/>
+{/capture}
+
+{include file="includes/generic-confirm-dialog.html"
+
+         dialog_id       = "schedules-delete"
+         dialog_title    = {intl l="Delete an entry of schedules" d="schedules.bo.default"}
+         dialog_message  = {$smarty.capture.schedules_delete nofilter}
+         dialog_ok_label     = {intl l="Delete"}
+         dialog_cancel_label = {intl l="Cancel"}
+
+         form_action         = {token_url path='/admin/module/schedules/product/delete'}
+}

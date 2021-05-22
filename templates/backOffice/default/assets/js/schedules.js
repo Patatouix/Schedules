@@ -82,6 +82,7 @@ $(function () { console.log('yo');
     // clone a schedule
     $('a.schedules-clone').on('click', function(e) {
         $("#attr-schedules-clone-schedule-id", "#schedules-clone").val($(this).data('schedule-id'));
+        $("#attr-schedules-stock input").val($(this).data('stock'));
         $("#attr-schedules-period-begin input, #attr-schedules-period-end input").prop('required', false);
         $("#attr-schedules-day").prop('required', false);
     });

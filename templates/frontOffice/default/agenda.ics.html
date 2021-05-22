@@ -1,0 +1,14 @@
+{loop name="agenda" type="agenda"}
+    BEGIN:VCALENDAR
+    VERSION:2.0
+    PRODID:-//MJC Cheval Blanc//Calendrier//EN
+    {$ID|dump}
+    {loop name="schedules" type="schedules" resource_type="product" resource_id=$ID}
+        BEGIN:VEVENT
+        DTSTART:{$BEGIN|date_format:"%T"}
+        DTEND:{$END|date_format:"%T"}
+        SUMMARY:titre
+        END:VEVENT
+    {/loop}
+    END:VCALENDAR
+{/loop}

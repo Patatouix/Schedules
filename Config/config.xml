@@ -5,24 +5,16 @@
         xsi:schemaLocation="http://thelia.net/schema/dic/config http://thelia.net/schema/dic/config/thelia-1.0.xsd">
 
     <loops>
-        <loop name="schedules-product" class="Schedules\Loop\SchedulesProductLoop"/>
-        <loop name="schedules-content" class="Schedules\Loop\SchedulesContentLoop"/>
-        <loop name="schedules-store" class="Schedules\Loop\SchedulesStoreLoop"/>
+        <loop name="schedules" class="Schedules\Loop\SchedulesLoop"/>
+        <loop name="agenda" class="Schedules\Loop\AgendaLoop"/>
     </loops>
 
     <forms>
-        <!-- Product -->
-        <form name="schedules.product.create" class="Schedules\Form\Product\SchedulesForm"/>
-        <form name="schedules.product.update" class="Schedules\Form\Product\SchedulesFormUpdate"/>
-        <form name="schedules.product.clone" class="Schedules\Form\Product\SchedulesFormClone"/>
-        <!-- Content -->
-        <form name="schedules.content.create" class="Schedules\Form\Content\SchedulesForm"/>
-        <form name="schedules.content.update" class="Schedules\Form\Content\SchedulesFormUpdate"/>
-        <form name="schedules.content.clone" class="Schedules\Form\Content\SchedulesFormClone"/>
-        <!-- Store -->
-        <form name="schedules.store.create" class="Schedules\Form\Store\SchedulesForm"/>
-        <form name="schedules.store.update" class="Schedules\Form\Store\SchedulesFormUpdate"/>
-        <form name="schedules.store.clone" class="Schedules\Form\Store\SchedulesFormClone"/>
+        <form name="schedules.create" class="Schedules\Form\SchedulesForm" />
+        <form name="schedules.update" class="Schedules\Form\SchedulesFormUpdate" />
+        <form name="schedules.clone" class="Schedules\Form\SchedulesFormClone" />
+        <form name="schedules.delete" class="Schedules\Form\SchedulesFormDelete" />
+        <form name="schedules.configuration" class="Schedules\Form\Configuration" />
     </forms>
 
     <commands>
@@ -36,17 +28,29 @@
             <tag name="hook.event_listener" event="product.tab" type="back" />
             <tag name="hook.event_listener" event="content.tab" type="back" />
             <tag name="hook.event_listener" event="config-store.tab" type="back" />
+            <tag name="hook.event_listener" event="module.configuration" type="back" templates="render:module_configuration.html" />
             <tag name="hook.event_listener" event="product.edit-js" type="back" templates="js:assets/js/schedules.js" />
             <tag name="hook.event_listener" event="content.edit-js" type="back" templates="js:assets/js/schedules.js" />
             <tag name="hook.event_listener" event="config-store.js" type="back" templates="js:assets/js/schedules.js" />
         </hook>
+
+        <hook id="schedules.front.hook" class="Schedules\Hook\FrontHook">
+            <tag name="hook.event_listener" event="product.additional" type="front" />
+            <tag name="hook.event_listener" event="product.stylesheet" type="front" templates="css:assets/css/fullcalendar.css" />
+            <tag name="hook.event_listener" event="product.javascript-initialization" type="front" templates="js:assets/js/fullcalendar.js;js:assets/js/schedules.js" />
+        </hook>
+
     </hooks>
 
-    <!--
-    <exports>
-
-    </exports>
-    -->
+    <services>
+        <service id="schedules.event" class="Schedules\EventListener\ScheduleEventListener">
+            <tag name="kernel.event_subscriber"/>
+            <argument type="service" id="event_dispatcher"/>
+        </service>
+        <service id="schedules.resource.event" class="Schedules\EventListener\ScheduleResourceEventListener">
+            <tag name="kernel.event_subscriber"/>
+        </service>
+    </services>
 
     <!--
     <imports>

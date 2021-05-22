@@ -38,7 +38,9 @@ CREATE TABLE `product_schedule`
     INDEX `fi_product_id` (`product_id`),
     CONSTRAINT `fk_product_schedule_id`
         FOREIGN KEY (`schedule_id`)
-        REFERENCES `schedule` (`id`),
+        REFERENCES `schedule` (`id`)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     CONSTRAINT `fk_product_id`
         FOREIGN KEY (`product_id`)
         REFERENCES `product` (`id`)
@@ -58,7 +60,9 @@ CREATE TABLE `content_schedule`
     INDEX `fi_content_id` (`content_id`),
     CONSTRAINT `fk_content_schedule_id`
         FOREIGN KEY (`schedule_id`)
-        REFERENCES `schedule` (`id`),
+        REFERENCES `schedule` (`id`)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     CONSTRAINT `fk_content_id`
         FOREIGN KEY (`content_id`)
         REFERENCES `content` (`id`)
@@ -77,6 +81,8 @@ CREATE TABLE `store_schedule`
     CONSTRAINT `fk_store_schedule_id`
         FOREIGN KEY (`schedule_id`)
         REFERENCES `schedule` (`id`)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------

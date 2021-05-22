@@ -16,33 +16,23 @@ use Thelia\Core\Hook\BaseHook;
 use Thelia\Core\Event\Hook\HookRenderBlockEvent;
 
 use Schedules\Schedules;
-use Thelia\Model\Base\ProductQuery;
-use Thelia\Model\Base\TemplateQuery;
 
 /**
- * Class BackHook
+ * Class FrontHook
  * @package Schedules\Hook
  * @author Thierry CARESMEL <dev@pixel-plurimedia.fr>
  */
-class BackHook extends BaseHook
+class FrontHook extends BaseHook
 {
-    public function onProductTab(HookRenderBlockEvent $event)
+    public function onProductAdditional(HookRenderBlockEvent $event)
     {
-        if (null !== $product = ProductQuery::create()->findPk($this->getRequest()->get('product_id'))) {
-            // check if product template is the one required in module config
-            if ($product->getTemplateId() == Schedules::getConfigValue('template')) {
-
-                $event->add([
-                    'id' => 'schedules',
-                    'title' => $this->trans('Schedules', [], Schedules::DOMAIN_NAME),
-                    'content' => $this->render('schedules.html', [
-                        'resource_type' => 'product',
-                        'resource_auth' => 'admin.product',
-                        'resource_id' => $this->getRequest()->get('product_id'),
-                    ]),
-                ]);
-            }
-        }
+        $event->add([
+            'id' => 'schedules',
+            'title' => $this->trans('Schedules', [], Schedules::DOMAIN_NAME),
+            'content' => $this->render('product_schedules.html', [
+                'product_id' => $this->getRequest()->get('product_id'),
+            ]),
+        ]);
     }
 
     public function onContentTab(HookRenderBlockEvent $event)
@@ -50,10 +40,8 @@ class BackHook extends BaseHook
         $event->add([
             'id' => 'schedules',
             'title' => $this->trans('Schedules', [], Schedules::DOMAIN_NAME),
-            'content' => $this->render('schedules.html', [
-                'resource_type' => 'content',
-                'resource_auth' => 'admin.content',
-                'resource_id' => $this->getRequest()->get('content_id'),
+            'content' => $this->render('content_schedules.html', [
+                'content_id' => $this->getRequest()->get('content_id'),
             ]),
         ]);
     }
@@ -63,11 +51,7 @@ class BackHook extends BaseHook
         $event->add([
             'id' => 'schedules',
             'title' => $this->trans('Schedules', [], Schedules::DOMAIN_NAME),
-            'content' => $this->render('schedules.html', [
-                'resource_type' => 'store',
-                'resource_auth' => 'admin.configuration.store',
-                'resource_id' => null
-            ])
+            'content' => $this->render('store_schedules.html')
         ]);
     }
 }

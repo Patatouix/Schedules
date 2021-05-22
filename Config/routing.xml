@@ -4,50 +4,32 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://symfony.com/schema/routing http://symfony.com/schema/routing/routing-1.0.xsd">
 
-    <!-- Product -->
-    <route id="schedules.product.create" path="/admin/module/schedules/product/create" methods="post">
-        <default key="_controller">Schedules\Controller\Back\SchedulesProductController::createScheduleAction</default>
+    <route id="schedules.create" path="/admin/module/schedules/create" methods="post">
+        <default key="_controller">Schedules\Controller\SchedulesBackController::createScheduleAction</default>
     </route>
-    <route id="schedules.product.update" path="/admin/module/schedules/product/update" methods="post">
-        <default key="_controller">Schedules\Controller\Back\SchedulesProductController::updateScheduleAction</default>
+    <route id="schedules.update" path="/admin/module/schedules/update" methods="post">
+        <default key="_controller">Schedules\Controller\SchedulesBackController::updateScheduleAction</default>
     </route>
-    <route id="schedules.product.clone" path="/admin/module/schedules/product/clone" methods="post">
-        <default key="_controller">Schedules\Controller\Back\SchedulesProductController::cloneScheduleAction</default>
+    <route id="schedules.clone" path="/admin/module/schedules/clone" methods="post">
+        <default key="_controller">Schedules\Controller\SchedulesBackController::cloneScheduleAction</default>
     </route>
-    <route id="schedules.product.delete" path="/admin/module/schedules/product/delete" methods="post">
-        <default key="_controller">Schedules\Controller\Back\SchedulesProductController::deleteScheduleAction</default>
-    </route>
-
-    <!-- Content -->
-    <route id="schedules.content.create" path="/admin/module/schedules/content/create" methods="post">
-        <default key="_controller">Schedules\Controller\Back\SchedulesContentController::createScheduleAction</default>
-    </route>
-    <route id="schedules.content.update" path="/admin/module/schedules/content/update" methods="post">
-        <default key="_controller">Schedules\Controller\Back\SchedulesContentController::updateScheduleAction</default>
-    </route>
-    <route id="schedules.content.clone" path="/admin/module/schedules/content/clone" methods="post">
-        <default key="_controller">Schedules\Controller\Back\SchedulesContentController::cloneScheduleAction</default>
-    </route>
-    <route id="schedules.content.delete" path="/admin/module/schedules/content/delete" methods="post">
-        <default key="_controller">Schedules\Controller\Back\SchedulesContentController::deleteScheduleAction</default>
+    <route id="schedules.delete" path="/admin/module/schedules/delete" methods="post">
+        <default key="_controller">Schedules\Controller\SchedulesBackController::deleteScheduleAction</default>
     </route>
 
     <!-- Store -->
-    <!-- TODO : demander si meilleur moyen d'override config-store.html -->
     <route id="admin.configuration.store.default" path="/admin/configuration/store">
-        <default key="_controller">Schedules\Controller\Back\SchedulesStoreController::getConfigStore</default>
+        <default key="_controller">Schedules\Controller\SchedulesBackController::getConfigStore</default>
     </route>
-    <route id="schedules.store.create" path="/admin/module/schedules/store/create" methods="post">
-        <default key="_controller">Schedules\Controller\Back\SchedulesStoreController::createScheduleAction</default>
+
+    <!-- Config module -->
+    <route id="schedules.configuration" path="/admin/module/schedules/configuration/update" methods="POST">
+        <default key="_controller">Schedules\Controller\SchedulesBackController::editConfiguration</default>
     </route>
-    <route id="schedules.store.update" path="/admin/module/schedules/store/update" methods="post">
-        <default key="_controller">Schedules\Controller\Back\SchedulesStoreController::updateScheduleAction</default>
-    </route>
-    <route id="schedules.store.clone" path="/admin/module/schedules/store/clone" methods="post">
-        <default key="_controller">Schedules\Controller\Back\SchedulesStoreController::cloneScheduleAction</default>
-    </route>
-    <route id="schedules.store.delete" path="/admin/module/schedules/store/delete" methods="post">
-        <default key="_controller">Schedules\Controller\Back\SchedulesStoreController::deleteScheduleAction</default>
+
+    <!-- Agenda -->
+    <route id="schedules.agenda" path="/module/schedules/agenda" methods="GET">
+        <default key="_controller">Schedules\Controller\SchedulesFrontController::getAgenda</default>
     </route>
 
 </routes>

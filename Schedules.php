@@ -29,6 +29,7 @@ class Schedules extends BaseModule
             $database = new Database($con);
             $database->insertSql(null, array(__DIR__ . '/Config/Sql/create.sql'));
             $this->setConfigValue('is_initialized', true);
+            $this->setConfigValue('template', 0);
         }
     }
 

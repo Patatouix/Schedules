@@ -21,7 +21,7 @@
         <column name="schedule_id" type="integer" primaryKey="true" required="true" />
         <column name="product_id" type="integer" required="true" />
         <column name="stock" type="integer" />
-        <foreign-key foreignTable="schedule" name="fk_schedule_id">
+        <foreign-key foreignTable="schedule" name="fk_product_schedule_id" onDelete="CASCADE" onUpdate="CASCADE">
             <reference local="schedule_id" foreign="id" />
         </foreign-key>
         <foreign-key foreignTable="product" name="fk_product_id">
@@ -32,7 +32,7 @@
     <table name="content_schedule" namespace="Schedules\Model">
         <column name="schedule_id" type="integer" primaryKey="true" required="true" />
         <column name="content_id" type="integer" required="true" />
-        <foreign-key foreignTable="schedule" name="fk_schedule_id">
+        <foreign-key foreignTable="schedule" name="fk_content_schedule_id" onDelete="CASCADE" onUpdate="CASCADE">
             <reference local="schedule_id" foreign="id" />
         </foreign-key>
         <foreign-key foreignTable="content" name="fk_content_id">
@@ -42,7 +42,7 @@
 
     <table name="store_schedule" namespace="Schedules\Model">
         <column name="schedule_id" type="integer" primaryKey="true" required="true" />
-        <foreign-key foreignTable="schedule" name="fk_schedule_id">
+        <foreign-key foreignTable="schedule" name="fk_store_schedule_id" onDelete="CASCADE" onUpdate="CASCADE">
             <reference local="schedule_id" foreign="id" />
         </foreign-key>
     </table>
@@ -50,7 +50,7 @@
     <table name="cart_item_schedule" namespace="Schedules\Model">
         <column name="schedule_id" type="integer" primaryKey="true" required="true" />
         <column name="cart_item_id" type="integer" required="true" />
-        <foreign-key foreignTable="schedule" name="fk_schedule_id">
+        <foreign-key foreignTable="schedule" name="fk_cart_item_schedule_id">
             <reference local="schedule_id" foreign="id" />
         </foreign-key>
         <foreign-key foreignTable="cart_item" name="fk_cart_item_id">
@@ -61,7 +61,7 @@
     <table name="order_product_schedule" namespace="Schedules\Model">
         <column name="schedule_id" type="integer" primaryKey="true" required="true" />
         <column name="order_product_id" type="integer" required="true" />
-        <foreign-key foreignTable="schedule" name="fk_schedule_id">
+        <foreign-key foreignTable="schedule" name="fk_order_product_schedule_id">
             <reference local="schedule_id" foreign="id" />
         </foreign-key>
         <foreign-key foreignTable="order_product" name="fk_order_product_id">

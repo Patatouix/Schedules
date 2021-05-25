@@ -12,7 +12,6 @@
 
 namespace Schedules\Controller;
 
-use LocalPickup\Listener\Schedules;
 use Thelia\Controller\Admin\ProductController;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Core\Security\AccessManager;
@@ -28,6 +27,7 @@ use Schedules\Event\DeleteScheduleEvent;
 use Schedules\Event\SchedulesEvent;
 use Schedules\Event\SchedulesProductEvent;
 use Schedules\Event\UpdateScheduleEvent;
+use Schedules\Form\SchedulesForm;
 use Schedules\Model\Event\ScheduleEvent;
 use Schedules\Schedules as SchedulesModule;
 use Schedules\Model\ProductSchedule;
@@ -79,7 +79,7 @@ class SchedulesBackController extends BaseAdminController
         // Error (Default: false)
         $error_msg = false;
         // Create the Creation Form
-        $creationForm = $this->createForm('schedules.create');
+        $creationForm = $this->createForm(SchedulesModule::SCHEDULES_FORM_CREATE);
 
         try {
             // Check the form against constraints violations
@@ -137,7 +137,7 @@ class SchedulesBackController extends BaseAdminController
         // Error (Default: false)
         $error_msg = false;
         // Create the Form from the request
-        $changeForm = $this->createForm('schedules.update');
+        $changeForm = $this->createForm(SchedulesModule::SCHEDULES_FORM_UPDATE);
 
         try {
             // Check the form against constraints violations
@@ -191,7 +191,7 @@ class SchedulesBackController extends BaseAdminController
         // Error (Default: false)
         $error_msg = false;
         // Create the Creation Form
-        $cloneForm = $this->createForm('schedules.clone');
+        $cloneForm = $this->createForm(SchedulesModule::SCHEDULES_FORM_CLONE);
 
         try {
             // Check the form against constraints violations
@@ -248,7 +248,7 @@ class SchedulesBackController extends BaseAdminController
         // Error (Default: false)
         $error_msg = false;
         // Create the Creation Form
-        $deleteForm = $this->createForm('schedules.delete');
+        $deleteForm = $this->createForm(SchedulesModule::SCHEDULES_FORM_DELETE);
 
         try {
             // Check the form against constraints violations
@@ -299,7 +299,7 @@ class SchedulesBackController extends BaseAdminController
             return $response;
         }
 
-        $form = $this->createForm('schedules.configuration');
+        $form = $this->createForm(SchedulesModule::SCHEDULES_FORM_CONFIGURATION);
         $error_message = null;
 
         try {

@@ -23,6 +23,12 @@ class Schedules extends BaseModule
     /** @var string */
     const DOMAIN_NAME = 'schedules';
 
+    const SCHEDULES_FORM_CREATE = "schedules.create";
+    const SCHEDULES_FORM_UPDATE = "schedules.update";
+    const SCHEDULES_FORM_CLONE = "schedules.clone";
+    const SCHEDULES_FORM_DELETE = "schedules.delete";
+    const SCHEDULES_FORM_CONFIGURATION = "schedules.configuration";
+
     public function postActivation(ConnectionInterface $con = null)
     {
         if (!$this->getConfigValue('is_initialized', false)) {

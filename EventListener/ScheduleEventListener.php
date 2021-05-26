@@ -25,6 +25,10 @@ use Schedules\Event\DeleteScheduleEvent;
 use Schedules\Event\Resource\CloneScheduleResourceEvent;
 use Schedules\Event\Resource\CreateScheduleResourceEvent;
 use Schedules\Event\Resource\UpdateScheduleResourceEvent;
+use Schedules\Event\ScheduleDateEvent;
+use Schedules\Event\ScheduleEvent;
+use Schedules\Event\ScheduleResourceEvent;
+use Schedules\Model\Event\ProductScheduleDateEvent;
 use Schedules\Model\Schedule;
 use Schedules\Model\ScheduleQuery;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -47,119 +51,87 @@ class ScheduleEventListener implements EventSubscriberInterface
         $this->dispatcher = $dispatcher;
     }
 
-    public function createSchedule(CreateScheduleEvent $event)
+    public function processSchedule(ScheduleEvent $event)
     {
         $data = $event->getData();
+        $action = $event->getAction();
 
         $con = Propel::getConnection();
         $con->beginTransaction();
 
         try {
-            if (empty($data["day"])) {
-                $dataAM = $this->formatData($data);
-                $dataPM = $this->formatData($data, 'PM');
-
-                if ($this->hasNullDate($dataAM) && $this->hasNullDate($dataPM)) {
-                    $schedule = new Schedule();
-                    $this->hydrateScheduleAndDispatch($schedule, $dataAM, 'create');
-                } else {
-                    if (!$this->hasNullDate($dataAM)) {
-                        $schedule = new Schedule();
-                        $this->hydrateScheduleAndDispatch($schedule, $dataAM, 'create');
-                    }
-                    if (!$this->hasNullDate($dataPM)) {
-                        $schedule = new Schedule();
-                        $this->hydrateScheduleAndDispatch($schedule, $dataPM, 'create');
-                    }
-                }
-            } else {
-                foreach ($data["day"] as $day) {
-                    $currentData = $data;
-                    $currentData["day"] = $day;
-                    $dataAM = $this->formatData($currentData);
-                    $dataPM = $this->formatData($currentData, 'PM');
-
-                    if ($this->hasNullDate($dataAM) && $this->hasNullDate($dataPM)) {
-                        $schedule = new Schedule();
-                        $this->hydrateScheduleAndDispatch($schedule, $dataAM, 'create');
-                    } else {
-                        if (!$this->hasNullDate($dataAM)) {
-                            $schedule = new Schedule();
-                            $this->hydrateScheduleAndDispatch($schedule, $dataAM, 'create');
-                        }
-                        if (!$this->hasNullDate($dataPM)) {
-                            $schedule = new Schedule();
-                            $this->hydrateScheduleAndDispatch($schedule, $dataPM, 'create');
-                        }
-                    }
-                }
+            switch ($action) {
+                case 'create':
+                    $this->createSchedule($data);
+                    break;
+                case 'update':
+                    $this->updateSchedule($data);
+                    break;
+                case 'clone':
+                    $this->cloneSchedule($data);
+                    break;
+                case 'delete':
+                    $this->deleteSchedule($data);
+                    break;
+                default:
+                    break;
             }
-
             $con->commit();
-
         } catch (\Exception $ex) {
-            // if any error happened
+            // if any error happened, rollback transaction
             $con->rollBack();
         }
     }
 
-    public function updateSchedule(UpdateScheduleEvent $event)
+    public function createSchedule($data)
     {
-        $data = $event->getData();
+        if (empty($data["day"])) {
+            $dataAM = $this->formatData($data);
+            $dataPM = $this->formatData($data, 'PM');
 
-        if (isset($data['schedule_id']) && (null != $existingSchedule = ScheduleQuery::create()->findPk($data['schedule_id']))) {
+            if ($this->hasNullDate($dataAM) && $this->hasNullDate($dataPM)) {
+                $this->hydrateScheduleAndDispatch(new Schedule(), $dataAM);
+            } else {
+                if (!$this->hasNullDate($dataAM)) $this->hydrateScheduleAndDispatch(new Schedule(), $dataAM);
+                if (!$this->hasNullDate($dataPM)) $this->hydrateScheduleAndDispatch(new Schedule(), $dataPM);
+            }
+        } else {
+            foreach ($data["day"] as $day) {
+                $currentData = $data;
+                $currentData["day"] = $day;
+                $dataAM = $this->formatData($currentData);
+                $dataPM = $this->formatData($currentData, 'PM');
 
-            $con = Propel::getConnection();
-            $con->beginTransaction();
-
-            try {
-                $this->hydrateScheduleAndDispatch($existingSchedule, $data, 'update');
-                $con->commit();
-            } catch (\Exception $ex) {
-                // if any error happened
-                $con->rollBack();
+                if ($this->hasNullDate($dataAM) && $this->hasNullDate($dataPM)) {
+                    $this->hydrateScheduleAndDispatch(new Schedule(), $dataAM);
+                } else {
+                    if (!$this->hasNullDate($dataAM)) $this->hydrateScheduleAndDispatch(new Schedule(), $dataAM);
+                    if (!$this->hasNullDate($dataPM)) $this->hydrateScheduleAndDispatch(new Schedule(), $dataPM);
+                }
             }
         }
     }
 
-    public function cloneSchedule(CloneScheduleEvent $event)
+    public function updateSchedule($data)
     {
-        $data = $event->getData();
-
         if (isset($data['schedule_id']) && (null != $existingSchedule = ScheduleQuery::create()->findPk($data['schedule_id']))) {
+            $this->hydrateScheduleAndDispatch($existingSchedule, $data);
+        }
+    }
 
-            $con = Propel::getConnection();
-            $con->beginTransaction();
-
+    public function cloneSchedule($data)
+    {
+        if (isset($data['schedule_id']) && (null != $existingSchedule = ScheduleQuery::create()->findPk($data['schedule_id']))) {
             $copySchedule = $existingSchedule->copy();
-
-            try {
-                $this->hydrateScheduleAndDispatch($copySchedule, $data, 'create');
-                $con->commit();
-            } catch (\Exception $ex) {
-                // if any error happened
-                $con->rollBack();
-            }
+            $this->hydrateScheduleAndDispatch($copySchedule, $data);
         }
     }
 
-    public function deleteSchedule(DeleteScheduleEvent $event)
+    public function deleteSchedule($data)
     {
-        $data = $event->getData();
-
         if (isset($data['schedule_id']) && (null != $existingSchedule = ScheduleQuery::create()->findPk($data['schedule_id']))) {
-
-            $con = Propel::getConnection();
-            $con->beginTransaction();
-
-            try {
-                $existingSchedule->delete();
-                // due to CASCADE, resource schedules (productSchedule, contentSchedule...) are also deleted
-                $con->commit();
-            } catch (\Exception $ex) {
-                // if any error happened
-                $con->rollBack();
-            }
+            $existingSchedule->delete();
+            // also delete associated schedule resource, due to CASCADE. No need to dispatch schedule resource event
         }
     }
 
@@ -186,22 +158,30 @@ class ScheduleEventListener implements EventSubscriberInterface
         return !($data["begin"] && $data["end"]);
     }
 
-    protected function hydrateScheduleAndDispatch($schedule, $data, $eventType)
+    protected function hydrateScheduleAndDispatch($schedule, $data)
     {
         $hydratedSchedule = $this->hydrateSchedule($schedule, $data);
 
-        $eventClass = 'Schedules\Event\Resource\\' . ucfirst($eventType) . 'ScheduleResourceEvent';
-        $eventConstant = strtoupper($eventType) . '_SCHEDULE_RESOURCE_EVENT';
-
-        //dispatch event
-        $event = new $eventClass();
+        // dispatch resource event that process schedule resource (ProductSchedule, ContentSchedule, StoreSchedule)
+        $event = new ScheduleResourceEvent();
         $event->setData($data);
         $event->setSchedule($hydratedSchedule);
 
         $this->dispatcher->dispatch(
-            constant($eventClass . '::' . $eventConstant),
+            ScheduleResourceEvent::SCHEDULE_RESOURCE_EVENT,
             $event
         );
+
+        // if our schedule resource is a product, process ScheduleProductDate
+        if ('product' === $data['resource_type']) {
+            $event = new ScheduleDateEvent();
+            $event->setSchedule($hydratedSchedule);
+
+            $this->dispatcher->dispatch(
+                ScheduleDateEvent::SCHEDULE_DATE_EVENT,
+                $event
+            );
+        }
     }
 
     protected function hydrateSchedule($schedule, $data)
@@ -231,10 +211,7 @@ class ScheduleEventListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            CreateScheduleEvent::CREATE_SCHEDULE_EVENT => ['createSchedule', 128],
-            UpdateScheduleEvent::UPDATE_SCHEDULE_EVENT => ['updateSchedule', 128],
-            CloneScheduleEvent::CLONE_SCHEDULE_EVENT => ['cloneSchedule', 128],
-            DeleteScheduleEvent::DELETE_SCHEDULE_EVENT => ['deleteSchedule', 128],
+            ScheduleEvent::SCHEDULE_EVENT => ['processSchedule', 128],
         ];
     }
 }

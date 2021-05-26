@@ -1,4 +1,4 @@
-$(function () { console.log('yo');
+$(function () {
 
     // create a default schedule
     $('a.schedules-default').on('click', function(e) {

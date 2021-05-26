@@ -35,7 +35,7 @@ class BackHook extends BaseHook
                 $event->add([
                     'id' => 'schedules',
                     'title' => $this->trans('Schedules', [], Schedules::DOMAIN_NAME),
-                    'content' => $this->render('schedules.html', [
+                    'content' => $this->render('schedules_product.html', [
                         'resource_type' => 'product',
                         'resource_auth' => 'admin.product',
                         'resource_id' => $this->getRequest()->get('product_id'),

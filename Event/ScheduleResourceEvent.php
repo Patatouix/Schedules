@@ -1,6 +1,6 @@
 <?php
 
-namespace Schedules\Event\Resource;
+namespace Schedules\Event;
 
 use Schedules\Event\ScheduleEvent;
 
@@ -10,6 +10,8 @@ use Schedules\Event\ScheduleEvent;
  */
 class ScheduleResourceEvent extends ScheduleEvent
 {
+    const SCHEDULE_RESOURCE_EVENT = 'schedules.schedule_resource';
+
     protected $schedule;
 
     public function getSchedule()

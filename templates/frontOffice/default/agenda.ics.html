@@ -1,14 +1,14 @@
-{loop name="agenda" type="agenda"}
-    BEGIN:VCALENDAR
-    VERSION:2.0
-    PRODID:-//MJC Cheval Blanc//Calendrier//EN
-    {$ID|dump}
-    {loop name="schedules" type="schedules" resource_type="product" resource_id=$ID}
-        BEGIN:VEVENT
-        DTSTART:{$BEGIN|date_format:"%T"}
-        DTEND:{$END|date_format:"%T"}
-        SUMMARY:titre
-        END:VEVENT
-    {/loop}
-    END:VCALENDAR
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//MJC Cheval Blanc//Calendrier//EN
+{loop name="products_dates" type="agenda"}
+    BEGIN:VEVENT
+    DTSTART:{$DATE_BEGIN}
+    DTEND:{$DATE_END}
+    SUMMARY:{$ID}
+    END:VEVENT
 {/loop}
+{elseloop rel="products_dates"}
+    Pas de dates !
+{/elseloop}
+END:VCALENDAR

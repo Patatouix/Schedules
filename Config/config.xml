@@ -50,6 +50,9 @@
         <service id="schedules.resource.event" class="Schedules\EventListener\ScheduleResourceEventListener">
             <tag name="kernel.event_subscriber"/>
         </service>
+        <service id="schedules.date.event" class="Schedules\EventListener\ScheduleDateEventListener">
+            <tag name="kernel.event_subscriber"/>
+        </service>
     </services>
 
     <!--

@@ -28,7 +28,7 @@ use Schedules\Event\SchedulesEvent;
 use Schedules\Event\SchedulesProductEvent;
 use Schedules\Event\UpdateScheduleEvent;
 use Schedules\Form\SchedulesForm;
-use Schedules\Model\Event\ScheduleEvent;
+use Schedules\Event\ScheduleEvent;
 use Schedules\Schedules as SchedulesModule;
 use Schedules\Model\ProductSchedule;
 use Schedules\Model\ProductScheduleQuery;
@@ -88,11 +88,12 @@ class SchedulesBackController extends BaseAdminController
             $data = $form->getData();
 
             // dispatch schedule creation event with validated data
-            $event = new CreateScheduleEvent();
+            $event = new ScheduleEvent();
             $event->setData($data);
+            $event->setAction('create');
 
             $this->dispatch(
-                CreateScheduleEvent::CREATE_SCHEDULE_EVENT,
+                ScheduleEvent::SCHEDULE_EVENT,
                 $event
             );
 
@@ -147,10 +148,12 @@ class SchedulesBackController extends BaseAdminController
             $data = $form->getData();
 
             // dispatch schedule update event with validated data
-            $event = new UpdateScheduleEvent();
+            $event = new ScheduleEvent();
             $event->setData($data);
+            $event->setAction('update');
+
             $this->dispatch(
-                UpdateScheduleEvent::UPDATE_SCHEDULE_EVENT,
+                ScheduleEvent::SCHEDULE_EVENT,
                 $event
             );
 
@@ -200,10 +203,12 @@ class SchedulesBackController extends BaseAdminController
             $data = $form->getData();
 
             // dispatch schedule clone event with validated data
-            $event = new CloneScheduleEvent();
+            $event = new ScheduleEvent();
             $event->setData($data);
+            $event->setAction('clone');
+
             $this->dispatch(
-                CloneScheduleEvent::CLONE_SCHEDULE_EVENT,
+                ScheduleEvent::SCHEDULE_EVENT,
                 $event
             );
 
@@ -257,10 +262,12 @@ class SchedulesBackController extends BaseAdminController
             $data = $form->getData();
 
             // dispatch schedule delete event
-            $event = new DeleteScheduleEvent();
+            $event = new ScheduleEvent();
             $event->setData($data);
+            $event->setAction('delete');
+
             $this->dispatch(
-                DeleteScheduleEvent::DELETE_SCHEDULE_EVENT,
+                ScheduleEvent::SCHEDULE_EVENT,
                 $event
             );
 

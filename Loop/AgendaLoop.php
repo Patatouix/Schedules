@@ -12,19 +12,14 @@
 
 namespace Schedules\Loop;
 
+use DateTime;
 use Schedules\Schedules;
-use Schedules\Model\ProductSchedule;
-use Schedules\Model\ProductScheduleQuery;
-use Propel\Runtime\ActiveQuery\Criteria;
-use Schedules\Model\ContentScheduleQuery;
-use Schedules\Model\StoreScheduleQuery;
+use Schedules\Model\ProductScheduleDateQuery;
 use Thelia\Core\Template\Element\BaseLoop;
 use Thelia\Core\Template\Element\LoopResult;
 use Thelia\Core\Template\Element\LoopResultRow;
 use Thelia\Core\Template\Element\PropelSearchLoopInterface;
-use Thelia\Core\Template\Loop\Argument\Argument;
 use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
-use Thelia\Model\Base\ProductQuery;
 
 /**
  * Class AgendaLoop
@@ -51,9 +46,8 @@ class AgendaLoop extends BaseLoop implements PropelSearchLoopInterface
      */
     public function buildModelCriteria()
     {
-        $query = ProductQuery::create();
+        $query = ProductScheduleDateQuery::create();
         // filter by products that have good config template
-        $query->filterByTemplateId(Schedules::getConfigValue('template'));
 
         return $query;
     }
@@ -65,12 +59,18 @@ class AgendaLoop extends BaseLoop implements PropelSearchLoopInterface
      */
     public function parseResults(LoopResult $loopResult)
     {
-        foreach ($loopResult->getResultDataCollection() as $product) {
-            $loopResultRow = new LoopResultRow($product);
+        foreach ($loopResult->getResultDataCollection() as $date) {
+            $loopResultRow = new LoopResultRow($date);
 
             $loopResultRow
-                ->set('ID', $product->getId())
-                ->set('REF', $product->getRef())
+                ->set('ID', $date->getId())
+                ->set('DATE_BEGIN', $date->getDateBegin()->format('Ymd\THis\Z'))
+                ->set('DATE_END', $date->getDateEnd()->format('Ymd\THis\Z'))
+                ->set('TIME_BEGIN', $date->getTimeBegin())
+                ->set('TIME_END', $date->getTimeEnd())
+                ->set('STOCK', $date->getStock())
+                ->set('CLOSED', $date->getClosed())
+                ->set('PRODUCT_ID', $date->getProductId())
             ;
 
             $loopResult->addRow($loopResultRow);

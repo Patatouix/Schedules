@@ -126,12 +126,12 @@ CREATE TABLE `order_product_schedule`
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
--- product_schedule_date
+-- schedule_date
 -- ---------------------------------------------------------------------
 
-DROP TABLE IF EXISTS `product_schedule_date`;
+DROP TABLE IF EXISTS `schedule_date`;
 
-CREATE TABLE `product_schedule_date`
+CREATE TABLE `schedule_date`
 (
     `id` INTEGER NOT NULL AUTO_INCREMENT,
     `date_begin` DATE,
@@ -140,14 +140,16 @@ CREATE TABLE `product_schedule_date`
     `time_end` TIME,
     `stock` INTEGER,
     `closed` TINYINT(1),
-    `product_id` INTEGER NOT NULL,
+    `schedule_id` INTEGER NOT NULL,
     `created_at` DATETIME,
     `updated_at` DATETIME,
     PRIMARY KEY (`id`),
-    INDEX `fi_product_schedule_date_product_id` (`product_id`),
-    CONSTRAINT `fk_product_schedule_date_product_id`
-        FOREIGN KEY (`product_id`)
-        REFERENCES `product` (`id`)
+    INDEX `fi_schedule_date_schedule_id` (`schedule_id`),
+    CONSTRAINT `fk_schedule_date_schedule_id`
+        FOREIGN KEY (`schedule_id`)
+        REFERENCES `schedule` (`id`)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 # This restores the fkey checks, after having unset them earlier

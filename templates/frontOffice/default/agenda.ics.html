@@ -1,14 +1,17 @@
 BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//MJC Cheval Blanc//Calendrier//EN
-{loop name="products_dates" type="agenda"}
-    BEGIN:VEVENT
-    DTSTART:{$DATE_BEGIN}
-    DTEND:{$DATE_END}
-    SUMMARY:{$ID}
-    END:VEVENT
+PRODID:-//{config key="store_name"}//Agenda 1.0//EN
+CALSCALE:GREGORIAN
+METHOD:PUBLISH
+{loop name="products_dates" type="scheduledate" agenda="true"}
+UID:{$ID}
+BEGIN:VEVENT
+DTSTART:{$BEGIN}
+DTEND:{$END}
+SUMMARY:{$REF}
+END:VEVENT
 {/loop}
 {elseloop rel="products_dates"}
-    Pas de dates !
+Pas de dates !
 {/elseloop}
 END:VCALENDAR

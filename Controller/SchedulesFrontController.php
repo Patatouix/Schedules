@@ -12,23 +12,8 @@
 
 namespace Schedules\Controller;
 
-use LocalPickup\Listener\Schedules;
-use Thelia\Controller\Admin\ProductController;
-use Thelia\Core\Security\Resource\AdminResources;
-use Thelia\Core\Security\AccessManager;
-use Thelia\Form\Exception\FormValidationException;
-use Thelia\Tools\URL;
-
-use Symfony\Component\HttpFoundation\RedirectResponse;
-use Schedules\Schedules as ModuleSchedules;
-use Propel\Runtime\Propel;
-use Schedules\Model\ScheduleQuery;
+use Symfony\Component\HttpFoundation\Response;
 use Thelia\Controller\Front\BaseFrontController;
-use Thelia\Core\HttpFoundation\Request;
-use Thelia\Core\HttpFoundation\Response;
-use Thelia\Form\Definition\AdminForm;
-use Thelia\Model\Base\ProductQuery;
-use TheliaSmarty\Template\Plugins\Render;
 
 /**
  * Class SchedulesProductController
@@ -39,10 +24,9 @@ class SchedulesFrontController extends BaseFrontController
 {
     public function getAgenda()
     {
-        $query = ProductQuery::create();
-
-        $products = $query->filterByTemplateId(ModuleSchedules::getConfigValue('template'))->find();
-
-        return $this->render('agenda.ics');
+        return new Response($this->renderRaw('agenda.ics'), 200, [
+            'Content-type' => 'text/calendar; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename=agenda.ics'
+        ]);
     }
 }

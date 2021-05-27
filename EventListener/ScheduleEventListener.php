@@ -131,7 +131,7 @@ class ScheduleEventListener implements EventSubscriberInterface
     {
         if (isset($data['schedule_id']) && (null != $existingSchedule = ScheduleQuery::create()->findPk($data['schedule_id']))) {
             $existingSchedule->delete();
-            // also delete associated schedule resource, due to CASCADE. No need to dispatch schedule resource event
+            // also delete associated schedule resources + schedule dates (due to CASCADE)
         }
     }
 

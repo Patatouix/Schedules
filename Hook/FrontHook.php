@@ -16,6 +16,7 @@ use Thelia\Core\Hook\BaseHook;
 use Thelia\Core\Event\Hook\HookRenderBlockEvent;
 
 use Schedules\Schedules;
+use Thelia\Core\Event\Hook\HookRenderEvent;
 
 /**
  * Class FrontHook
@@ -32,26 +33,6 @@ class FrontHook extends BaseHook
             'content' => $this->render('product_schedules.html', [
                 'product_id' => $this->getRequest()->get('product_id'),
             ]),
-        ]);
-    }
-
-    public function onContentTab(HookRenderBlockEvent $event)
-    {
-        $event->add([
-            'id' => 'schedules',
-            'title' => $this->trans('Schedules', [], Schedules::DOMAIN_NAME),
-            'content' => $this->render('content_schedules.html', [
-                'content_id' => $this->getRequest()->get('content_id'),
-            ]),
-        ]);
-    }
-
-    public function onConfigStoreTab(HookRenderBlockEvent $event)
-    {
-        $event->add([
-            'id' => 'schedules',
-            'title' => $this->trans('Schedules', [], Schedules::DOMAIN_NAME),
-            'content' => $this->render('store_schedules.html')
         ]);
     }
 }

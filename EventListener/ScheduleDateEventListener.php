@@ -15,34 +15,10 @@ namespace Schedules\EventListener;
 
 use DateInterval;
 use DatePeriod;
-use DateTime;
-use Propel\Runtime\Propel;
-use Schedules\Event\CloneScheduleEvent;
-use Schedules\Event\CreateScheduleEvent;
-use Schedules\Event\Resource\ScheduleContentEvent;
-use Schedules\Event\Resource\ScheduleProductEvent;
-use Schedules\Event\SchedulesEvent;
-use Schedules\Event\Resource\ScheduleStoreEvent;
-use Schedules\Event\UpdateScheduleEvent;
-use Schedules\Event\DeleteScheduleEvent;
-use Schedules\Event\Resource\CloneScheduleResourceEvent;
-use Schedules\Event\Resource\CreateScheduleResourceEvent;
-use Schedules\Event\Resource\UpdateScheduleResourceEvent;
 use Schedules\Event\ScheduleDateEvent;
-use Schedules\Event\ScheduleResourceEvent;
-use Schedules\Model\ContentSchedule;
-use Schedules\Model\ProductSchedule;
-use Schedules\Model\ProductScheduleDate;
-use Schedules\Model\Schedule;
-use Schedules\Model\ScheduleQuery;
-use Schedules\Model\StoreSchedule;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Schedules\Model\ScheduleDate;
+use Schedules\Model\ScheduleDateQuery;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\Validator\Constraints\Date;
-use Symfony\Component\VarDumper\Cloner\Data;
 
 /**
  * Class ScheduleDateEventListener
@@ -54,6 +30,7 @@ class ScheduleDateEventListener implements EventSubscriberInterface
     public function processScheduleDate(ScheduleDateEvent $event)
     {
         $schedule = $event->getSchedule();
+        $id = $schedule->getId();
         $day = $schedule->getDay();
         $periodBegin = $schedule->getPeriodBegin();
         $periodEnd = $schedule->getPeriodEnd();
@@ -61,9 +38,15 @@ class ScheduleDateEventListener implements EventSubscriberInterface
         $end = $schedule->getEnd();
         $closed = $schedule->getClosed();
 
-        $productSchedule = $schedule->getProductSchedule();
-        $stock = $productSchedule->getStock();
-        $productId = $productSchedule->getProductId();
+        if (null !== $productSchedule = $schedule->getProductSchedule()) {
+            $stock = $productSchedule->getStock();
+        };
+
+        // delete all dates of schedule before creating new ones
+        ScheduleDateQuery::create()
+            ->findByScheduleId($id)
+            ->delete()
+        ;
 
         if (null !== $day) {
             //setTime() is a trick to get last day of DatePeriod
@@ -74,12 +57,12 @@ class ScheduleDateEventListener implements EventSubscriberInterface
 
                 if ((int)$dayPeriod->format('w') === (int)($day + 1)) {
 
-                    $date = new ProductScheduleDate();
+                    $date = new ScheduleDate();
                     $date->setDateBegin($dayPeriod)
                         ->setDateEnd($dayPeriod)
                         ->setStock($stock)
                         ->setClosed($closed)
-                        ->setProductId($productId)
+                        ->setScheduleId($id)
                         ->setTimeBegin($begin)
                         ->setTimeEnd($end)
                         ->save()
@@ -87,12 +70,12 @@ class ScheduleDateEventListener implements EventSubscriberInterface
                 }
             }
         } else {
-            $date = new ProductScheduleDate();
+            $date = new ScheduleDate();
             $date->setDateBegin($periodBegin)
                 ->setDateEnd($periodEnd)
                 ->setStock($stock)
                 ->setClosed($closed)
-                ->setProductId($productId)
+                ->setScheduleId($id)
                 ->setTimeBegin($begin)
                 ->setTimeEnd($end)
                 ->save()

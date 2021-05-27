@@ -12,20 +12,21 @@
 
 namespace Schedules\Loop;
 
-use DateTime;
+use Schedules\Model\ScheduleDate;
+use Schedules\Model\ScheduleDateQuery;
 use Schedules\Schedules;
-use Schedules\Model\ProductScheduleDateQuery;
 use Thelia\Core\Template\Element\BaseLoop;
 use Thelia\Core\Template\Element\LoopResult;
 use Thelia\Core\Template\Element\LoopResultRow;
 use Thelia\Core\Template\Element\PropelSearchLoopInterface;
 use Thelia\Core\Template\Loop\Argument\ArgumentCollection;
+use Thelia\Core\Template\Loop\Argument\Argument;
 
 /**
- * Class AgendaLoop
+ * Class ScheduleDateLoop
  * @package Schedules\Loop
  */
-class AgendaLoop extends BaseLoop implements PropelSearchLoopInterface
+class ScheduleDateLoop extends BaseLoop implements PropelSearchLoopInterface
 {
     /**
      * Definition of loop arguments
@@ -35,7 +36,8 @@ class AgendaLoop extends BaseLoop implements PropelSearchLoopInterface
     protected function getArgDefinitions()
     {
         return new ArgumentCollection(
-            //
+            Argument::createIntTypeArgument('product_id', null),
+            Argument::createBooleanTypeArgument('agenda', false)
         );
     }
 
@@ -46,8 +48,18 @@ class AgendaLoop extends BaseLoop implements PropelSearchLoopInterface
      */
     public function buildModelCriteria()
     {
-        $query = ProductScheduleDateQuery::create();
-        // filter by products that have good config template
+        $query = ScheduleDateQuery::create()
+            //TODO : voir si on ne pourrait pas mettre un product_id dans ScheduleDate pour éviter 2 jointures
+            ->join('ScheduleDate.Schedule')
+            ->join('Schedule.ProductSchedule')
+            ->join('ProductSchedule.Product')
+            // filter by products that have good config template
+            ->where('Product.TemplateId = ?', Schedules::getConfigValue('template', 0))
+        ;
+
+        if ($productId = $this->getProductId()) {
+            $query->where('Product.Id = ?', $productId);
+        }
 
         return $query;
     }
@@ -64,18 +76,39 @@ class AgendaLoop extends BaseLoop implements PropelSearchLoopInterface
 
             $loopResultRow
                 ->set('ID', $date->getId())
-                ->set('DATE_BEGIN', $date->getDateBegin()->format('Ymd\THis\Z'))
-                ->set('DATE_END', $date->getDateEnd()->format('Ymd\THis\Z'))
-                ->set('TIME_BEGIN', $date->getTimeBegin())
-                ->set('TIME_END', $date->getTimeEnd())
-                ->set('STOCK', $date->getStock())
-                ->set('CLOSED', $date->getClosed())
-                ->set('PRODUCT_ID', $date->getProductId())
+                ->set('BEGIN', $this->getDateTimeBegin($date))
+                ->set('END', $this->getDateTimeEnd($date))
+                // TODO : voir si on ne pourrait pas mettre un product_id dans ScheduleDate pour éviter 2 jointures
+                ->set('REF', $date->getSchedule()->getProductSchedule()->getProduct()->getRef())
             ;
 
             $loopResult->addRow($loopResultRow);
         }
 
         return $loopResult;
+    }
+
+    protected function getDateTimeBegin(ScheduleDate $date)
+    {
+        $dateBegin = $date->getDateBegin();
+        if (null !== $timeBegin = $date->getTimeBegin()) {
+            $dateBegin->setTime($timeBegin->format('H'), $timeBegin->format('i'), $timeBegin->format('s'));
+        }
+        if (true === $this->getAgenda()) {
+            $dateBegin->format('Ymd\THis\Z');
+        }
+        return $dateBegin;
+    }
+
+    protected function getDateTimeEnd(ScheduleDate $date)
+    {
+        $dateEnd = $date->getDateEnd();
+        if (null !== $timeEnd = $date->getTimeEnd()) {
+            $dateEnd->setTime($timeEnd->format('H'), $timeEnd->format('i'), $timeEnd->format('s'));
+        }
+        if (true === $this->getAgenda()) {
+            $dateEnd->format('Ymd\THis\Z');
+        }
+        return $dateEnd;
     }
 }

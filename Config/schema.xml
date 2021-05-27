@@ -69,7 +69,7 @@
         </foreign-key>
     </table>
 
-    <table name="product_schedule_date" namespace="Schedules\Model">
+    <table name="schedule_date" namespace="Schedules\Model">
         <column name="id" type="integer" primaryKey="true" autoIncrement="true" required="true" />
         <column name="date_begin" type="date" />
         <column name="date_end" type="date" />
@@ -77,9 +77,9 @@
         <column name="time_end" type="time" />
         <column name="stock" type="integer" />
         <column name="closed" type="boolean" />
-        <column name="product_id" type="integer" required="true" />
-        <foreign-key foreignTable="product" name="fk_product_schedule_date_product_id">
-            <reference local="product_id" foreign="id" />
+        <column name="schedule_id" type="integer" required="true" />
+        <foreign-key foreignTable="schedule" name="fk_schedule_date_schedule_id" onDelete="CASCADE" onUpdate="CASCADE">
+            <reference local="schedule_id" foreign="id" />
         </foreign-key>
         <behavior name="timestampable" />
     </table>

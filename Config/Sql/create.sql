@@ -86,46 +86,6 @@ CREATE TABLE `store_schedule`
 ) ENGINE=InnoDB;
 
 -- ---------------------------------------------------------------------
--- cart_item_schedule
--- ---------------------------------------------------------------------
-
-DROP TABLE IF EXISTS `cart_item_schedule`;
-
-CREATE TABLE `cart_item_schedule`
-(
-    `schedule_id` INTEGER NOT NULL,
-    `cart_item_id` INTEGER NOT NULL,
-    PRIMARY KEY (`schedule_id`),
-    INDEX `fi_cart_item_id` (`cart_item_id`),
-    CONSTRAINT `fk_cart_item_schedule_id`
-        FOREIGN KEY (`schedule_id`)
-        REFERENCES `schedule` (`id`),
-    CONSTRAINT `fk_cart_item_id`
-        FOREIGN KEY (`cart_item_id`)
-        REFERENCES `cart_item` (`id`)
-) ENGINE=InnoDB;
-
--- ---------------------------------------------------------------------
--- order_product_schedule
--- ---------------------------------------------------------------------
-
-DROP TABLE IF EXISTS `order_product_schedule`;
-
-CREATE TABLE `order_product_schedule`
-(
-    `schedule_id` INTEGER NOT NULL,
-    `order_product_id` INTEGER NOT NULL,
-    PRIMARY KEY (`schedule_id`),
-    INDEX `fi_order_product_id` (`order_product_id`),
-    CONSTRAINT `fk_order_product_schedule_id`
-        FOREIGN KEY (`schedule_id`)
-        REFERENCES `schedule` (`id`),
-    CONSTRAINT `fk_order_product_id`
-        FOREIGN KEY (`order_product_id`)
-        REFERENCES `order_product` (`id`)
-) ENGINE=InnoDB;
-
--- ---------------------------------------------------------------------
 -- schedule_date
 -- ---------------------------------------------------------------------
 
@@ -150,6 +110,48 @@ CREATE TABLE `schedule_date`
         REFERENCES `schedule` (`id`)
         ON UPDATE CASCADE
         ON DELETE CASCADE
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- cart_item_schedule_date
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `cart_item_schedule_date`;
+
+CREATE TABLE `cart_item_schedule_date`
+(
+    `cart_item_id` INTEGER NOT NULL,
+    `schedule_date_id` INTEGER NOT NULL,
+    PRIMARY KEY (`cart_item_id`),
+    INDEX `fi_cart_item_schedule_date_schedule_date_id` (`schedule_date_id`),
+    CONSTRAINT `fk_cart_item_schedule_date_cart_item_id`
+        FOREIGN KEY (`cart_item_id`)
+        REFERENCES `cart_item` (`id`)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT `fk_cart_item_schedule_date_schedule_date_id`
+        FOREIGN KEY (`schedule_date_id`)
+        REFERENCES `schedule_date` (`id`)
+) ENGINE=InnoDB;
+
+-- ---------------------------------------------------------------------
+-- order_product_schedule_date
+-- ---------------------------------------------------------------------
+
+DROP TABLE IF EXISTS `order_product_schedule_date`;
+
+CREATE TABLE `order_product_schedule_date`
+(
+    `schedule_date_id` INTEGER NOT NULL,
+    `order_product_id` INTEGER NOT NULL,
+    PRIMARY KEY (`schedule_date_id`),
+    INDEX `fi_order_product_id` (`order_product_id`),
+    CONSTRAINT `fk_order_product_schedule_date_id`
+        FOREIGN KEY (`schedule_date_id`)
+        REFERENCES `schedule_date` (`id`),
+    CONSTRAINT `fk_order_product_id`
+        FOREIGN KEY (`order_product_id`)
+        REFERENCES `order_product` (`id`)
 ) ENGINE=InnoDB;
 
 # This restores the fkey checks, after having unset them earlier

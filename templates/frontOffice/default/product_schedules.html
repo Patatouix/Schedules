@@ -1,6 +1,7 @@
-<div id="fullcalendar"></div>
+<div id="fullcalendar-availabilities"></div>
 
 <script>
+
     let creneaux = [];
     let creneau = {};
     {loop type="scheduledate" name="schedule_date"}
@@ -8,6 +9,7 @@
             start: '{$BEGIN|date_format:"%Y-%m-%d %H:%M:%S"}',
             end: '{$END|date_format:"%Y-%m-%d %H:%M:%S"}',
             title: '{$REF}',
+            id: '{$ID}'
             /*reservable: {{ creneau.placesDisponibles }} ? true : false,
             //on réécris le debut et la fin dans des attributs "customs" pour pouvoir accéder plus tard à ces données
             //(le start et end ci-dessus seront transformés en objets JS et il est à priori difficile de réobtenir un format Y-m-d à partir de ces objets)
@@ -23,5 +25,5 @@
     {elseloop rel="schedule_date"}
         console.log('pas de dates');
     {/elseloop}
-    console.log(creneaux);
+
 </script>

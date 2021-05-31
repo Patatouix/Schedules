@@ -74,13 +74,13 @@
     </table>
 
     <table name="order_product_schedule_date" namespace="Schedules\Model">
-        <column name="schedule_date_id" type="integer" primaryKey="true" required="true" />
-        <column name="order_product_id" type="integer" required="true" />
-        <foreign-key foreignTable="schedule_date" name="fk_order_product_schedule_date_id">
-            <reference local="schedule_date_id" foreign="id" />
-        </foreign-key>
-        <foreign-key foreignTable="order_product" name="fk_order_product_id">
+        <column name="order_product_id" type="integer" primaryKey="true" required="true" />
+        <column name="schedule_date_id" type="integer" required="true" />
+        <foreign-key foreignTable="order_product" name="fk_order_product_schedule_date_order_product_id" onDelete="CASCADE" onUpdate="CASCADE">
             <reference local="order_product_id" foreign="id" />
+        </foreign-key>
+        <foreign-key foreignTable="schedule_date" name="fk_order_product_schedule_date_schedule_date_id">
+            <reference local="schedule_date_id" foreign="id" />
         </foreign-key>
     </table>
 

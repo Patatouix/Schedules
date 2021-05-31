@@ -142,16 +142,18 @@ DROP TABLE IF EXISTS `order_product_schedule_date`;
 
 CREATE TABLE `order_product_schedule_date`
 (
-    `schedule_date_id` INTEGER NOT NULL,
     `order_product_id` INTEGER NOT NULL,
-    PRIMARY KEY (`schedule_date_id`),
-    INDEX `fi_order_product_id` (`order_product_id`),
-    CONSTRAINT `fk_order_product_schedule_date_id`
-        FOREIGN KEY (`schedule_date_id`)
-        REFERENCES `schedule_date` (`id`),
-    CONSTRAINT `fk_order_product_id`
+    `schedule_date_id` INTEGER NOT NULL,
+    PRIMARY KEY (`order_product_id`),
+    INDEX `fi_order_product_schedule_date_schedule_date_id` (`schedule_date_id`),
+    CONSTRAINT `fk_order_product_schedule_date_order_product_id`
         FOREIGN KEY (`order_product_id`)
         REFERENCES `order_product` (`id`)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
+    CONSTRAINT `fk_order_product_schedule_date_schedule_date_id`
+        FOREIGN KEY (`schedule_date_id`)
+        REFERENCES `schedule_date` (`id`)
 ) ENGINE=InnoDB;
 
 # This restores the fkey checks, after having unset them earlier

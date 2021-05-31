@@ -62,6 +62,10 @@
             <argument type="service" id="request" />
             <tag name="kernel.event_subscriber" />
         </service>
+        <service id="schedules.order.before.payment" class="Schedules\EventListener\OrderBeforePaymentEventListener" scope="request">
+            <argument type="service" id="request" />
+            <tag name="kernel.event_subscriber" />
+        </service>
     </services>
 
     <!--

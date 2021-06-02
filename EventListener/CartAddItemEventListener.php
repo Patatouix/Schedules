@@ -17,7 +17,8 @@ class CartAddItemEventListener implements EventSubscriberInterface
 {
     public function createCartItemScheduleDate(CartEvent $event)
     {
-        if (null === CartItemScheduleDateQuery::create()->filterByScheduleDateId($event->schedule_date)->findOne()) {
+        // only create cartItemScheduleDate if cart_item does not already exist
+        if (null === CartItemScheduleDateQuery::create()->filterByCartItemId($event->getCartItem()->getId())->findOne()) {
             $cartItemScheduleDate = new CartItemScheduleDate();
             $cartItemScheduleDate
                 ->setScheduleDateId($event->schedule_date)

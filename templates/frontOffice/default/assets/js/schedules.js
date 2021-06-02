@@ -1,63 +1,76 @@
-$('#tabschedules').on('shown.bs.tab', function () {
-    var calendarEl = document.getElementById('fullcalendar-availabilities');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        events: creneaux,
-        displayEventEnd: true,
-    });
-    calendar.render();
+class ScheduleDate
+{
+    constructor()
+    {
+        this.scheduleDateSelect = document.querySelector('#schedule_date');
+    }
 
-});
+    init()
+    {
+        this.onTabShownCalendar();
+        this.onModalShownCalendar();
+        this.onScheduleDateSelectChange();
+        this.setMaxQuantity();
+    }
 
-$('#schedules-dates-modal').on('shown.bs.modal', function () {
-    var calendarEl = document.getElementById('fullcalendar-pick-date');
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        events: creneaux,
-        displayEventEnd: true,
-        eventDidMount: function(info) {
-            //dans cette fonction on peut modifier le html de l'event
-            info.el.dataset.dismiss = 'modal';
-            info.el.dataset.id = info.event.id;
-            info.el.style.cursor = 'pointer';
-        },
-    });
-    calendar.render();
-
-    document.querySelectorAll('#schedules-dates-modal .fc-event').forEach((el) => {
-        el.addEventListener('click', (event) => {
-            //event.stopPropagation();
-            const dateInput = document.querySelector('#truc');
-            dateInput.value = event.currentTarget.dataset.id;
+    onTabShownCalendar()
+    {
+        $('#tabschedules').on('shown.bs.tab', () => {
+            var calendarEl = document.getElementById('fullcalendar-availabilities');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: creneaux,
+                displayEventEnd: true
+            });
+            calendar.render();
         });
-    });
-});
+    }
 
+    onModalShownCalendar()
+    {
+        $('#schedules-dates-modal').on('shown.bs.modal', () => {
+            var calendarEl = document.getElementById('fullcalendar-pick-date');
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: creneaux,
+                displayEventEnd: true,
+                eventDidMount: function(info) {
+                    //dans cette fonction on peut modifier le html de l'event
+                    info.el.dataset.id = info.event.id;
+                    if (info.event.extendedProps.selectable) {
+                        info.el.style.cursor = 'pointer';
+                        info.el.dataset.dismiss = 'modal';
+                    } else {
+                        info.el.style.pointerEvents = 'none';
+                    }
+                },
+            });
+            calendar.render();
 
+            // click on calendar events changes value of schedule date <select>
+            document.querySelectorAll('#schedules-dates-modal .fc-event').forEach((el) => {
+                el.addEventListener('click', (event) => {
+                    //event.stopPropagation();
+                    const dateInput = document.querySelector('#schedule_date');
+                    dateInput.value = event.currentTarget.dataset.id;
+                    this.setMaxQuantity();
+                });
+            });
+        });
+    }
 
-/*$('#tabschedules').on('shown.bs.tab', function () {
+    onScheduleDateSelectChange()
+    {
+        document.querySelector('#schedule_date').addEventListener('change', () => {
+            this.setMaxQuantity();
+        });
+    }
 
-    var calendarEl = document.getElementById('calendar');
+    setMaxQuantity()
+    {
+        let selectedOption = this.scheduleDateSelect.options[this.scheduleDateSelect.selectedIndex];
+        document.querySelector('#quantity').setAttribute('max', selectedOption.dataset.stock);
+    }
+}
 
-      var calendar = new Calendar(calendarEl, {
-          plugins: [ dayGridPlugin ],
-          initialView: 'dayGridMonth',
-          locale: frLocale,
-          events: creneaux,  //la variable creneaux a été construite dans le fichier de template
-          eventDidMount: function(info) {
-            //dans cette fonction on peut modifier le rendu du creneau
-          },
-          eventTimeFormat: {
-            //ici on modifie comment s'affiche l'heure des créneaux
-            hour: '2-digit',
-            minute: '2-digit',
-            meridiem: false
-          },
-          validRange: function(nowDate) {
-            return {
-              start: nowDate,
-            };
-          }
-      });
-
-    calendar.render();*/
+(new ScheduleDate).init();

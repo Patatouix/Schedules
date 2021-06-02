@@ -9,16 +9,9 @@
             start: '{$BEGIN|date_format:"%Y-%m-%d %H:%M:%S"}',
             end: '{$END|date_format:"%Y-%m-%d %H:%M:%S"}',
             title: '{$REF}',
-            id: '{$ID}'
-            /*reservable: {{ creneau.placesDisponibles }} ? true : false,
-            //on réécris le debut et la fin dans des attributs "customs" pour pouvoir accéder plus tard à ces données
-            //(le start et end ci-dessus seront transformés en objets JS et il est à priori difficile de réobtenir un format Y-m-d à partir de ces objets)
-            debut: '{{ creneau.debut|date('d/m/Y à H:i:s') }}',
-            fin: '{{ creneau.fin|date('d/m/Y à H:i:s') }}',
-            creneauId: '{{ creneau.id }}',
-            places: {{ creneau.placesDisponibles }},
-            //couleur selon la disponibilité
-            color: {{ creneau.placesDisponibles }} ? 'green' : 'red',*/
+            id: '{$ID}',
+            color: {$STOCK} ? 'green' : 'red',
+            selectable: {$STOCK} ? true : false
         }
         creneaux.push(creneau);
     {/loop}

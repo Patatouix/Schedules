@@ -16,5 +16,25 @@ use Schedules\Model\Base\ScheduleDate as BaseScheduleDate;
  */
 class ScheduleDate extends BaseScheduleDate
 {
-
+    /**
+     * Returns the remaining stock of a schedule date
+     *
+     * @return Integer
+     */
+    public function getRemainingStock()
+    {
+        $consumedStock = 0;
+        foreach ($this->getOrderProductScheduleDates() as $orderProductScheduleDate) {
+            $orderProduct = $orderProductScheduleDate->getOrderProduct();
+            $order = $orderProduct->getOrder();
+            if ($order->getPaymentModuleInstance()->manageStockOnCreation()) {
+                $consumedStock += $orderProduct->getQuantity();
+            } else {
+                if ($orderProduct->getOrder()->isPaid()) {
+                    $consumedStock += $orderProduct->getQuantity();
+                }
+            }
+        }
+        return ($this->getStock() - $consumedStock);
+    }
 }

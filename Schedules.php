@@ -17,6 +17,7 @@ use Thelia\Core\Template\TemplateDefinition;
 use Thelia\Module\BaseModule;
 use Thelia\Install\Database;
 use Thelia\Model\ModuleConfigQuery;
+use Thelia\Model\ProductQuery;
 
 class Schedules extends BaseModule
 {

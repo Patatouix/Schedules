@@ -78,8 +78,10 @@ class ScheduleDateLoop extends BaseLoop implements PropelSearchLoopInterface
                 ->set('ID', $date->getId())
                 ->set('BEGIN', $this->getDateTimeBegin($date))
                 ->set('END', $this->getDateTimeEnd($date))
+                ->set('LABEL', $this->getLabel($date))
                 // TODO : voir si on ne pourrait pas mettre un product_id dans ScheduleDate pour éviter 2 jointures
                 ->set('REF', $date->getSchedule()->getProductSchedule()->getProduct()->getRef())
+                ->set('STOCK', $date->getRemainingStock())
             ;
 
             $loopResult->addRow($loopResultRow);
@@ -110,5 +112,18 @@ class ScheduleDateLoop extends BaseLoop implements PropelSearchLoopInterface
             $dateEnd->format('Ymd\THis\Z');
         }
         return $dateEnd;
+    }
+
+    protected function getLabel(ScheduleDate $date)
+    {
+        $label = 'Du ' . $date->getDateBegin()->format('d/m/Y');
+        if (null !== $date->getTimeBegin()) {
+            $label .= ' à ' . $date->getTimeBegin()->format('H:i');
+        }
+        $label .= ' au ' . $date->getDateEnd()->format('d/m/Y');
+        if (null !== $date->getTimeEnd()) {
+            $label .= ' à ' . $date->getTimeEnd()->format('H:i');
+        }
+        return $label;
     }
 }

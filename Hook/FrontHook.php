@@ -17,6 +17,7 @@ use Thelia\Core\Event\Hook\HookRenderBlockEvent;
 
 use Schedules\Schedules;
 use Thelia\Core\Event\Hook\HookRenderEvent;
+use Thelia\Model\ProductQuery;
 
 /**
  * Class FrontHook
@@ -27,12 +28,39 @@ class FrontHook extends BaseHook
 {
     public function onProductAdditional(HookRenderBlockEvent $event)
     {
-        $event->add([
-            'id' => 'schedules',
-            'title' => $this->trans('Schedules', [], Schedules::DOMAIN_NAME),
-            'content' => $this->render('product_schedules.html', [
-                'product_id' => $this->getRequest()->get('product_id'),
-            ]),
-        ]);
+        if ($this->isProductSchedulable()) {
+            $event->add([
+                'id' => 'schedules',
+                'title' => $this->trans('Schedules', [], Schedules::DOMAIN_NAME),
+                'content' => $this->render('product_schedules.html', [
+                    'product_id' => $this->getRequest()->get('product_id'),
+                ]),
+            ]);
+        }
+    }
+
+    public function onProductJavascriptInitialization(HookRenderEvent $event)
+    {
+        if ($this->isProductSchedulable()) {
+            $event->add($this->addJS("assets/js/fullcalendar.js"));
+            $event->add($this->addJS("assets/js/schedules.js"));
+        }
+    }
+
+    public function onProductStylesheet(HookRenderEvent $event)
+    {
+        if ($this->isProductSchedulable()) {
+            $event->add($this->addCSS("assets/css/fullcalendar.css"));
+        }
+    }
+
+    protected function isProductSchedulable()
+    {
+        if (null !== $product = ProductQuery::create()->findPk($this->getRequest()->get('product_id'))) {
+            // check if product template is the one required in module config
+            return $product->getTemplateId() == Schedules::getConfigValue('template');
+        } else {
+            return false;
+        }
     }
 }

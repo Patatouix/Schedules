@@ -19,8 +19,14 @@ class ScheduleDate
             var calendarEl = document.getElementById('fullcalendar-availabilities');
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
-                events: creneaux,
-                displayEventEnd: true
+                //events: creneaux,
+                displayEventEnd: true,
+                events: {
+                    url: '/module/schedules/calendar/events',
+                    extraParams: {
+                        productId: productId
+                    }
+                }
             });
             calendar.render();
         });
@@ -32,7 +38,7 @@ class ScheduleDate
             var calendarEl = document.getElementById('fullcalendar-pick-date');
             var calendar = new FullCalendar.Calendar(calendarEl, {
                 initialView: 'dayGridMonth',
-                events: creneaux,
+                //events: creneaux,
                 displayEventEnd: true,
                 eventDidMount: function(info) {
                     //dans cette fonction on peut modifier le html de l'event
@@ -44,6 +50,12 @@ class ScheduleDate
                         info.el.style.pointerEvents = 'none';
                     }
                 },
+                events: {
+                    url: '/module/schedules/calendar/events',
+                    extraParams: {
+                        productId: productId
+                    }
+                }
             });
             calendar.render();
 

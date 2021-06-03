@@ -23,13 +23,18 @@
     </route>
 
     <!-- Config module -->
-    <route id="schedules.configuration" path="/admin/module/schedules/configuration/update" methods="POST">
+    <route id="schedules.configuration" path="/admin/module/schedules/configuration/update" methods="post">
         <default key="_controller">Schedules\Controller\SchedulesBackController::editConfiguration</default>
     </route>
 
     <!-- Agenda -->
-    <route id="schedules.agenda" path="/module/schedules/agenda" methods="GET">
+    <route id="schedules.agenda" path="/module/schedules/agenda" methods="get">
         <default key="_controller">Schedules\Controller\SchedulesFrontController::getAgenda</default>
+    </route>
+
+    <!-- Calendar events -->
+    <route id="schedules.calendar.events" path="/module/schedules/calendar/events" methods="get">
+        <default key="_controller">Schedules\Controller\SchedulesFrontController::getCalendarEvents</default>
     </route>
 
 </routes>

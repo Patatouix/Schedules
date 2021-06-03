@@ -5,6 +5,7 @@ namespace Schedules\EventListener;
 use DateTime;
 use Schedules\Model\ScheduleDateQuery;
 use Schedules\Schedules;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
@@ -28,10 +29,12 @@ class CartAddFormAfterBuildEventListener implements EventSubscriberInterface
     const FORM = 'thelia_cart_add';
 
     protected $request;
+    protected $dispatcher;
 
-    public function __construct(Request $request)
+    public function __construct(Request $request, EventDispatcherInterface $dispatcher)
     {
         $this->request = $request;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -95,7 +98,7 @@ class CartAddFormAfterBuildEventListener implements EventSubscriberInterface
             $consumedStock = 0;
 
             // check cart (do not allow customer to add to cart more than stock)
-            foreach ($this->request->getSession()->getSessionCart()->getCartItems() as $cartItem) {
+            foreach ($this->request->getSession()->getSessionCart($this->dispatcher)->getCartItems() as $cartItem) {
                 if ($cartItem->getProductId() === (int)$data['product'] && $cartItem->getCartItemScheduleDate()->getScheduleDateId() === (int)$data["schedule_date"]) {
                     $consumedStock += $cartItem->getQuantity();
                 }

@@ -55,6 +55,7 @@
         </service>
         <service id="schedules.cart.add.form" class="Schedules\EventListener\CartAddFormAfterBuildEventListener" scope="request">
             <argument type="service" id="request" />
+            <argument type="service" id="event_dispatcher" />
             <tag name="kernel.event_subscriber" />
         </service>
         <service id="schedules.cart.add.item" class="Schedules\EventListener\CartAddItemEventListener" scope="request">
@@ -62,6 +63,10 @@
             <tag name="kernel.event_subscriber" />
         </service>
         <service id="schedules.order.payment" class="Schedules\EventListener\OrderPaymentEventListener" scope="request">
+            <argument type="service" id="request" />
+            <tag name="kernel.event_subscriber" />
+        </service>
+        <service id="schedules.order.status.change" class="Schedules\EventListener\OrderStatusChangeEventListener" scope="request">
             <argument type="service" id="request" />
             <tag name="kernel.event_subscriber" />
         </service>

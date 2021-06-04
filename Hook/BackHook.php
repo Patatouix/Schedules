@@ -14,10 +14,10 @@ namespace Schedules\Hook;
 
 use Thelia\Core\Hook\BaseHook;
 use Thelia\Core\Event\Hook\HookRenderBlockEvent;
-
 use Schedules\Schedules;
+use Thelia\Core\Event\Hook\HookRenderEvent;
 use Thelia\Model\Base\ProductQuery;
-use Thelia\Model\Base\TemplateQuery;
+use Thelia\Model\OrderProductQuery;
 
 /**
  * Class BackHook
@@ -69,5 +69,12 @@ class BackHook extends BaseHook
                 'resource_id' => null
             ])
         ]);
+    }
+
+    public function onOrderEditProductList(HookRenderEvent $event)
+    {
+        $event->add($this->render('order-edit-product-list-schedule-date.html', [
+            'order_product_id' => $event->getArgument('order_product_id')
+        ]));
     }
 }

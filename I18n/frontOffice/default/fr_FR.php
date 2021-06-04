@@ -1,5 +1,6 @@
 <?php
 return array(
     'No scheduled dates' => 'Pas de dates programmées',
-    'Calendar' => 'Calendrier'
+    'Calendar' => 'Calendrier',
+    'Schedule date' => 'Dates'
 );

@@ -1,0 +1,9 @@
+
+<dl class="dl-horizontal">
+    <dt>{intl d='schedules.bo.default' l='Schedule date'}</dt>
+    <dd>
+        {loop type="scheduledate" name="scheduledate" order_product_id="{$order_product_id}"}
+            {$LABEL}
+        {/loop}
+    </dd>
+</dl>

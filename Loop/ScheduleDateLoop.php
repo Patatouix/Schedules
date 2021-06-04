@@ -40,6 +40,9 @@ class ScheduleDateLoop extends BaseLoop implements PropelSearchLoopInterface
             Argument::createIntTypeArgument('product_id', null),
             Argument::createBooleanTypeArgument('agenda', false),
             Argument::createBooleanTypeArgument('check_cart', false),
+            Argument::createIntTypeArgument('cart_item_id', null),
+            Argument::createIntTypeArgument('order_product_id', null),
+            Argument::createIntTypeArgument('schedule_date_id', null),
         );
     }
 
@@ -58,9 +61,29 @@ class ScheduleDateLoop extends BaseLoop implements PropelSearchLoopInterface
             // filter by products that have good config template
             ->where('Product.TemplateId = ?', Schedules::getConfigValue('template', 0))
         ;
+        //var_dump($scheduleDateId = $this->getScheduleDateId()); die;
+        if ($scheduleDateId = $this->getScheduleDateId()) {
+            $query->where('ScheduleDate.Id = ?', $scheduleDateId);
+        }
 
         if ($productId = $this->getProductId()) {
             $query->where('Product.Id = ?', $productId);
+        }
+
+        if ($cartItemId = $this->getCartItemId()) {
+            $query
+                ->join('ScheduleDate.CartItemScheduleDate')
+                ->join('CartItemScheduleDate.CartItem')
+                ->where('CartItem.Id = ?', $cartItemId)
+            ;
+        }
+
+        if ($orderProductId = $this->getOrderProductId()) {
+            $query
+                ->join('ScheduleDate.OrderProductScheduleDate')
+                ->join('OrderProductScheduleDate.OrderProduct')
+                ->where('OrderProduct.Id = ?', $orderProductId)
+            ;
         }
 
         return $query;
@@ -125,13 +148,13 @@ class ScheduleDateLoop extends BaseLoop implements PropelSearchLoopInterface
 
     protected function getLabel(ScheduleDate $date)
     {
-        $label = 'Du ' . $date->getDateBegin()->format('d/m/Y');
+        $label = $this->translator->trans("From", [], Schedules::DOMAIN_NAME) . ' ' . $date->getDateBegin()->format('d/m/Y');
         if (null !== $date->getTimeBegin()) {
-            $label .= ' à ' . $date->getTimeBegin()->format('H:i');
+            $label .= ' ' . $this->translator->trans("at", [], Schedules::DOMAIN_NAME) . ' ' . $date->getTimeBegin()->format('H:i');
         }
-        $label .= ' au ' . $date->getDateEnd()->format('d/m/Y');
+        $label .= ' ' . $this->translator->trans("to", [], Schedules::DOMAIN_NAME) . ' ' . $date->getDateEnd()->format('d/m/Y');
         if (null !== $date->getTimeEnd()) {
-            $label .= ' à ' . $date->getTimeEnd()->format('H:i');
+            $label .= ' ' . $this->translator->trans("at", [], Schedules::DOMAIN_NAME) . ' ' . $date->getTimeEnd()->format('H:i');
         }
         return $label;
     }

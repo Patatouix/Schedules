@@ -8,4 +8,7 @@ return array(
     'Friday' => 'Friday',
     'Saturday' => 'Saturday',
     'Sunday' => 'Sunday',
+    'From' => 'From',
+    'to' => 'to',
+    'at' => 'at'
 );

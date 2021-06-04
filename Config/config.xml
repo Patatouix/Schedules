@@ -32,6 +32,7 @@
             <tag name="hook.event_listener" event="product.edit-js" type="back" templates="js:assets/js/schedules.js" />
             <tag name="hook.event_listener" event="content.edit-js" type="back" templates="js:assets/js/schedules.js" />
             <tag name="hook.event_listener" event="config-store.js" type="back" templates="js:assets/js/schedules.js" />
+            <tag name="hook.event_listener" event="order-edit.product-list" type="back" />
         </hook>
 
         <hook id="schedules.front.hook" class="Schedules\Hook\FrontHook">

@@ -2,6 +2,7 @@
 
 namespace Schedules\EventListener;
 
+use Schedules\Event\ScheduleDateStockEvent;
 use Schedules\Model\CartItemScheduleDate;
 use Schedules\Model\CartItemScheduleDateQuery;
 use Schedules\Model\ScheduleDateQuery;
@@ -132,7 +133,13 @@ class CartEventListener implements EventSubscriberInterface
         ;
         // keep only as valid schedule dates those that have not depleted stock
         foreach ($scheduleDates as $scheduleDate) {
-            if ($scheduleDate->getRemainingStock() > 0) {
+            $event = new ScheduleDateStockEvent();
+            $event->setScheduleDate($scheduleDate);
+            $this->dispatcher->dispatch(
+                ScheduleDateStockEvent::SCHEDULE_DATE_STOCK_EVENT,
+                $event
+            );
+            if ($event->getRemainingStock() > 0) {
                 $scheduleDateIds[$scheduleDate->getId()] = $scheduleDate->getId();
             }
         }
@@ -142,20 +149,18 @@ class CartEventListener implements EventSubscriberInterface
     public function checkStock($value, ExecutionContextInterface $context)
     {
         $data = $context->getRoot()->getData();
-
+        //var_dump($data['quantity']); die;
         if (null !== $scheduleDate = ScheduleDateQuery::create()->findPk($data["schedule_date"])) {
 
-            $consumedStock = 0;
-
-            // check cart (do not allow customer to add to cart more than stock)
-            foreach ($this->request->getSession()->getSessionCart($this->dispatcher)->getCartItems() as $cartItem) {
-                if ($cartItem->getProductId() === (int)$data['product'] && $cartItem->getCartItemScheduleDate()->getScheduleDateId() === (int)$data["schedule_date"]) {
-                    $consumedStock += $cartItem->getQuantity();
-                }
-            }
+            $event = new ScheduleDateStockEvent();
+            $event->setScheduleDate($scheduleDate);
+            $this->dispatcher->dispatch(
+                ScheduleDateStockEvent::SCHEDULE_DATE_STOCK_EVENT,
+                $event
+            );
 
             // remove cart consumed stock from remaining stock, then compare to quantity of cart addition
-            if (($scheduleDate->getRemainingStock() - $consumedStock) < $data["quantity"]) {
+            if ($event->getRemainingStock() < $data["quantity"]) {
                 $context->addViolation(Translator::getInstance()->trans("quantity value is not valid"));
             }
         }

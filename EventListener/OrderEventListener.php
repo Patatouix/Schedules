@@ -15,18 +15,49 @@ use Thelia\Core\Event\Order\OrderEvent;
 use Thelia\Core\HttpFoundation\Request;
 use Thelia\Exception\OrderException;
 use Thelia\Exception\TheliaProcessException;
-use Thelia\Model\Base\OrderStatusQuery;
+use Thelia\Model\OrderStatusQuery;
 
 /**
- * [Description OrderStatusChangeEventListener]
+ * [Description OrderEventListener]
  */
-class OrderStatusChangeEventListener implements EventSubscriberInterface
+class OrderEventListener implements EventSubscriberInterface
 {
     protected $request;
+    protected $dispatcher;
 
-    public function __construct(Request $request)
+    public function __construct(Request $request, EventDispatcherInterface $dispatcher)
     {
         $this->request = $request;
+        $this->dispatcher = $dispatcher;
+    }
+
+    // checks if cart items still have valid schedule date stock before Thelia creates order products
+    public function checkstockScheduleDate(OrderEvent $event)
+    {
+        foreach ($this->request->getSession()->getSessionCart($this->dispatcher)->getCartItems() as $cartItem) {
+            if (null !== $cartItemScheduleDate = $cartItem->getCartItemScheduleDate()) {
+                if ($cartItemScheduleDate->getScheduleDate()->getRemainingStock() < $cartItem->getQuantity()) {
+                    $event->stopPropagation();
+                    throw new OrderException('Un article de votre panier n\'est plus suffisamment disponible', TheliaProcessException::CART_ITEM_NOT_ENOUGH_STOCK, $cartItem);
+                }
+            }
+        }
+    }
+
+    public function createOrderProductScheduleDate(OrderEvent $event)
+    {
+        foreach ($event->getOrder()->getOrderProducts() as $orderProduct) {
+            // check if order product was added to cart with a schedule date
+            if (null !== $cartItemScheduleDate = CartItemScheduleDateQuery::create()->filterByCartItemId($orderProduct->getCartItemId())->findOne()) {
+                // associates order product to this schedule date
+                $orderProductScheduleDate = new OrderProductScheduleDate();
+                $orderProductScheduleDate
+                    ->setOrderProductId($orderProduct->getId())
+                    ->setScheduleDateId($cartItemScheduleDate->getScheduleDateId())
+                    ->save()
+                ;
+            }
+        }
     }
 
     /**
@@ -64,7 +95,9 @@ class OrderStatusChangeEventListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            THeliaEvents::ORDER_UPDATE_STATUS => array('updateStatus', 256),
+            THeliaEvents::ORDER_PAY => array('checkstockScheduleDate', 256),
+            TheliaEvents::ORDER_BEFORE_PAYMENT => array('createOrderProductScheduleDate', 128),
+            THeliaEvents::ORDER_UPDATE_STATUS => array('updateStatus', 256)
         ];
     }
 }

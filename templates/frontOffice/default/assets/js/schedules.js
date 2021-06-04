@@ -40,7 +40,7 @@ class ScheduleDate
                 initialView: 'dayGridMonth',
                 //events: creneaux,
                 displayEventEnd: true,
-                eventDidMount: function(info) {
+                eventDidMount: (info) => {
                     //dans cette fonction on peut modifier le html de l'event
                     info.el.dataset.id = info.event.id;
                     if (info.event.extendedProps.selectable) {
@@ -49,25 +49,26 @@ class ScheduleDate
                     } else {
                         info.el.style.pointerEvents = 'none';
                     }
+                    // click on calendar events changes value of schedule date <select>
+                    document.querySelectorAll('#schedules-dates-modal .fc-event').forEach((el) => {
+                        el.addEventListener('click', (event) => {
+                            const dateInput = document.querySelector('#schedule_date');
+                            dateInput.value = event.currentTarget.dataset.id;
+                            this.setMaxQuantity();
+                        });
+                    });
                 },
                 events: {
                     url: '/module/schedules/calendar/events',
                     extraParams: {
                         productId: productId
                     }
+                },
+                loading: function(isloading) {
+                    //useful for displating a loader
                 }
             });
             calendar.render();
-
-            // click on calendar events changes value of schedule date <select>
-            document.querySelectorAll('#schedules-dates-modal .fc-event').forEach((el) => {
-                el.addEventListener('click', (event) => {
-                    //event.stopPropagation();
-                    const dateInput = document.querySelector('#schedule_date');
-                    dateInput.value = event.currentTarget.dataset.id;
-                    this.setMaxQuantity();
-                });
-            });
         });
     }
 

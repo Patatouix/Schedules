@@ -13,6 +13,7 @@
 namespace Schedules\Controller;
 
 use DateTime;
+use Schedules\Event\ScheduleDateStockEvent;
 use Schedules\Model\ScheduleDate;
 use Schedules\Model\ScheduleDateQuery;
 use Schedules\Schedules;
@@ -64,12 +65,21 @@ class SchedulesFrontController extends BaseFrontController
                     break;
                 }
 
+                $event = new ScheduleDateStockEvent();
+                $event->setScheduleDate($scheduleDate);
+                $this->getDispatcher()->dispatch(
+                    ScheduleDateStockEvent::SCHEDULE_DATE_STOCK_EVENT,
+                    $event
+                );
+                $remainingStock = $event->getRemainingStock();
+
                 $calendarEvent = [
                     'start' => $this->getDateTimeBegin($scheduleDate)->format('Y-m-d H:i:s'),
                     'end' => $this->getDateTimeEnd($scheduleDate)->format('Y-m-d H:i:s'),
+                    'id' => $scheduleDate->getId(),
                     //'title' => $scheduleDate->getSchedule()->getProductSchedule()->getProduct()->getRef(),
-                    'color' => $scheduleDate->getStock() ? 'green' : 'red',
-                    'selectable' => $scheduleDate->getStock() ? true : false
+                    'color' => $remainingStock > 0 ? 'green' : 'red',
+                    'selectable' => $remainingStock > 0 ? true : false
                 ];
                 array_push($calendarData, $calendarEvent);
             }

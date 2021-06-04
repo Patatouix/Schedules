@@ -16,9 +16,12 @@ namespace Schedules\EventListener;
 use DateInterval;
 use DatePeriod;
 use Schedules\Event\ScheduleDateEvent;
+use Schedules\Event\ScheduleDateStockEvent;
 use Schedules\Model\ScheduleDate;
 use Schedules\Model\ScheduleDateQuery;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Thelia\Core\HttpFoundation\Request;
 
 /**
  * Class ScheduleDateEventListener
@@ -26,6 +29,15 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  */
 class ScheduleDateEventListener implements EventSubscriberInterface
 {
+    protected $request;
+    protected $dispatcher;
+
+    public function __construct(Request $request, EventDispatcherInterface $dispatcher)
+    {
+        $this->request = $request;
+        $this->dispatcher = $dispatcher;
+    }
+
     // create all dates associated to a schedule
     public function processScheduleDate(ScheduleDateEvent $event)
     {
@@ -83,6 +95,24 @@ class ScheduleDateEventListener implements EventSubscriberInterface
         }
     }
 
+    public function getRemainingStock(ScheduleDateStockEvent $event)
+    {
+        $scheduleDate = $event->getScheduleDate();
+        $remainingStock = $scheduleDate->getRemainingStock();
+
+        // check if cart has consumed stock of this schedule date
+        foreach ($this->request->getSession()->getSessionCart($this->dispatcher)->getCartItems() as $cartItem) {
+            if (null !== $cartItemScheduleDate = $cartItem->getCartItemScheduleDate()) {
+                if ($cartItemScheduleDate->getScheduleDateId() === $scheduleDate->getId()) {
+                    $remainingStock -= $cartItem->getQuantity();
+                    //only one cart item is supposed to have this schedule date
+                    break;
+                }
+            }
+        }
+        $event->setRemainingStock($remainingStock);
+    }
+
     /**
      * @return array The event names to listen to
      *
@@ -92,6 +122,7 @@ class ScheduleDateEventListener implements EventSubscriberInterface
     {
         return [
             ScheduleDateEvent::SCHEDULE_DATE_EVENT => ['processScheduleDate', 128],
+            ScheduleDateStockEvent::SCHEDULE_DATE_STOCK_EVENT => ['getRemainingStock', 128],
         ];
     }
 }

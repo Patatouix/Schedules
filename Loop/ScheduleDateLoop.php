@@ -12,6 +12,7 @@
 
 namespace Schedules\Loop;
 
+use Schedules\Event\ScheduleDateStockEvent;
 use Schedules\Model\ScheduleDate;
 use Schedules\Model\ScheduleDateQuery;
 use Schedules\Schedules;
@@ -37,7 +38,8 @@ class ScheduleDateLoop extends BaseLoop implements PropelSearchLoopInterface
     {
         return new ArgumentCollection(
             Argument::createIntTypeArgument('product_id', null),
-            Argument::createBooleanTypeArgument('agenda', false)
+            Argument::createBooleanTypeArgument('agenda', false),
+            Argument::createBooleanTypeArgument('check_cart', false),
         );
     }
 
@@ -74,6 +76,13 @@ class ScheduleDateLoop extends BaseLoop implements PropelSearchLoopInterface
         foreach ($loopResult->getResultDataCollection() as $date) {
             $loopResultRow = new LoopResultRow($date);
 
+            $event = new ScheduleDateStockEvent();
+            $event->setScheduleDate($date);
+            $this->dispatcher->dispatch(
+                ScheduleDateStockEvent::SCHEDULE_DATE_STOCK_EVENT,
+                $event
+            );
+
             $loopResultRow
                 ->set('ID', $date->getId())
                 ->set('BEGIN', $this->getDateTimeBegin($date))
@@ -81,7 +90,7 @@ class ScheduleDateLoop extends BaseLoop implements PropelSearchLoopInterface
                 ->set('LABEL', $this->getLabel($date))
                 // TODO : voir si on ne pourrait pas mettre un product_id dans ScheduleDate pour éviter 2 jointures
                 ->set('REF', $date->getSchedule()->getProductSchedule()->getProduct()->getRef())
-                ->set('STOCK', $date->getRemainingStock())
+                ->set('STOCK', $event->getRemainingStock())
             ;
 
             $loopResult->addRow($loopResultRow);

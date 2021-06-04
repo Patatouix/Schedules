@@ -35,5 +35,7 @@ return array(
     "PM" => "Après-midi",
     "Period" => "Période",
     "Clone this Schedule" => "Cloner cet horaire",
-    "Opening Dates" => "Ouvertures exceptionnelles"
+    "Opening Dates" => "Ouvertures exceptionnelles",
+    'Schedules module adds schedules to some resources.' => 'Le module Horaires ajoute des horaires à certaines ressources.',
+    'Save' => 'Enregistrer'
 );

@@ -30,7 +30,7 @@ class BackHook extends BaseHook
     {
         if (null !== $product = ProductQuery::create()->findPk($this->getRequest()->get('product_id'))) {
             // check if product template is the one required in module config
-            if ($product->getTemplateId() == Schedules::getConfigValue('template')) {
+            if ($product->getTemplateId() == Schedules::getConfigValue('template_event_id', 0)) {
 
                 $event->add([
                     'id' => 'schedules',

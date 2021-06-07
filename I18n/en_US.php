@@ -10,5 +10,9 @@ return array(
     'Sunday' => 'Sunday',
     'From' => 'From',
     'to' => 'to',
-    'at' => 'at'
+    'at' => 'at',
+    'No template' => 'No template',
+    'A product that uses Schedules module gabarit should be virtual.' => 'A product that uses Schedules module gabarit should be virtual.',
+    'The template products must use in order to implement schedules.' => 'The template products must use in order to implement schedules.',
+    'Duration of each step during a schedule.' => 'Duration of each step during a schedule.'
 );

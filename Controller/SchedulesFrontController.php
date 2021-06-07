@@ -47,7 +47,7 @@ class SchedulesFrontController extends BaseFrontController
                 ->join('Schedule.ProductSchedule')
                 ->join('ProductSchedule.Product')
                 // filter by products that have good config template
-                ->where('Product.TemplateId = ?', Schedules::getConfigValue('template', 0))
+                ->where('Product.TemplateId = ?', Schedules::getConfigValue('template_event_id', 0))
                 ->where('Product.Id = ?', $productId)
                 ->find()
             ;

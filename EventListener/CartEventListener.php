@@ -101,7 +101,7 @@ class CartEventListener implements EventSubscriberInterface
         }
 
         if (null !== $product = ProductQuery::create()->findPk($productId)) {
-            if ($product->getTemplateId() == Schedules::getConfigValue('template')) {
+            if ($product->getTemplateId() == Schedules::getConfigValue('template_event_id', 0)) {
 
                 $formBuilder = $event->getForm()->getFormBuilder();
                 $formBuilder->add("schedule_date", ChoiceType::class, [

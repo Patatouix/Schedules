@@ -12,33 +12,16 @@
 
 namespace Schedules\Controller;
 
-use Thelia\Controller\Admin\ProductController;
 use Thelia\Core\Security\Resource\AdminResources;
 use Thelia\Core\Security\AccessManager;
 use Thelia\Form\Exception\FormValidationException;
 use Thelia\Tools\URL;
-
 use Symfony\Component\HttpFoundation\RedirectResponse;
-
-use Propel\Runtime\Propel;
-use Schedules\Event\CloneScheduleEvent;
-use Schedules\Event\CreateScheduleEvent;
-use Schedules\Event\DeleteScheduleEvent;
-use Schedules\Event\SchedulesEvent;
-use Schedules\Event\SchedulesProductEvent;
-use Schedules\Event\UpdateScheduleEvent;
-use Schedules\Form\SchedulesForm;
 use Schedules\Event\ScheduleEvent;
 use Schedules\Schedules as SchedulesModule;
-use Schedules\Model\ProductSchedule;
-use Schedules\Model\ProductScheduleQuery;
-use Schedules\Model\Schedule;
-use Schedules\Model\ScheduleQuery;
-use Thelia\Controller\Admin\AbstractCrudController;
 use Thelia\Controller\Admin\BaseAdminController;
 use Thelia\Core\HttpFoundation\Request;
 use Thelia\Form\Definition\AdminForm;
-use TheliaSmarty\Template\Plugins\Render;
 
 /**
  * Class SchedulesProductController
@@ -313,7 +296,8 @@ class SchedulesBackController extends BaseAdminController
             $validateForm = $this->validateForm($form);
             $data = $validateForm->getData();
 
-            SchedulesModule::setConfigValue('template', $data['template']);
+            SchedulesModule::setConfigValue('template_event_id', $data['template_event_id']);
+            SchedulesModule::setConfigValue('schedule_step', $data['schedule_step']);
 
             return $this->redirectToConfigurationPage();
 

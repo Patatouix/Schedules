@@ -59,7 +59,7 @@ class ScheduleDateLoop extends BaseLoop implements PropelSearchLoopInterface
             ->join('Schedule.ProductSchedule')
             ->join('ProductSchedule.Product')
             // filter by products that have good config template
-            ->where('Product.TemplateId = ?', Schedules::getConfigValue('template', 0))
+            ->where('Product.TemplateId = ?', Schedules::getConfigValue('template_event_id', 0))
         ;
         //var_dump($scheduleDateId = $this->getScheduleDateId()); die;
         if ($scheduleDateId = $this->getScheduleDateId()) {

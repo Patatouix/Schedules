@@ -32,12 +32,10 @@ class Schedules extends BaseModule
 
     public function postActivation(ConnectionInterface $con = null)
     {
-        if (!$this->getConfigValue('is_initialized', false)) {
-            $database = new Database($con);
-            $database->insertSql(null, array(__DIR__ . '/Config/Sql/create.sql'));
-            $this->setConfigValue('is_initialized', true);
-            $this->setConfigValue('template', 0);
-        }
+        $database = new Database($con);
+        $database->insertSql(null, array(__DIR__ . '/Config/Sql/create.sql'));
+        $this->setConfigValue('template_event_id', 0);
+        $this->setConfigValue('schedule_step', 0);
     }
 
     public function destroy(ConnectionInterface $con = null, $deleteModuleData = false)
@@ -45,7 +43,8 @@ class Schedules extends BaseModule
         if ($deleteModuleData) {
             $database = new Database($con);
             $database->insertSql(null, array(__DIR__ . '/Config/Sql/destroy.sql'));
-            ModuleConfigQuery::create()->deleteConfigValue(self::getModuleId(), 'is_initialized');
+            ModuleConfigQuery::create()->deleteConfigValue(self::getModuleId(), 'template_event_id');
+            ModuleConfigQuery::create()->deleteConfigValue(self::getModuleId(), 'schedule_step');
         }
     }
 

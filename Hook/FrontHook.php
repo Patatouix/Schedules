@@ -58,7 +58,7 @@ class FrontHook extends BaseHook
     {
         if (null !== $product = ProductQuery::create()->findPk($this->getRequest()->get('product_id'))) {
             // check if product template is the one required in module config
-            return $product->getTemplateId() == Schedules::getConfigValue('template');
+            return $product->getTemplateId() == Schedules::getConfigValue('template_event_id', 0);
         } else {
             return false;
         }
